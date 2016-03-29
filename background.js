@@ -6,17 +6,18 @@ window.addEventListener('keydown', e => {
     
     if (key !== 13) return;
     
-    e.stopPropagation();
-    
     if (input.value === '/collapse') {
-        input.value = '';
-        return collapseAll();
+        e.stopPropagation();
+        collapseAll();
+        return input.value = '';
     }
     if (input.value === '/uncollapse') {
+        e.stopPropagation();
+        unCollapseAll();
         input.value = '';
-        return unCollapseAll();
     }
     if (input.value.split(/\s+/)[0] === '/giphy') {
+        e.stopPropagation();
         const result = input.value.substr(input.value.indexOf(' '));
         giphyStuff(result.match(/\s(.*)/));
     }
@@ -28,19 +29,19 @@ window.addEventListener('keydown', e => {
 //Honestly it's self explanatory
 //tristanwiley.com
 function collapseAll() {
-    Array.from(document.querySelectorAll('.content')).forEach(obj => {
-        const elem = obj.firstElementChild
-        if (elem.classList.contains('onebox')) {
-            elem.hidden = true;
+    Array.from(document.querySelectorAll('.content')).forEach(content => {
+        const onebox = content.querySelector('.onebox');
+        if (onebox) {
+            onebox.hidden = true;
         }
     });
 }
 
 function unCollapseAll() {
-    Array.from(document.querySelectorAll('.content')).forEach(obj => {
-        const elem = obj.firstElementChild
-        if (elem.classList.contains('onebox')) {
-            elem.hidden = false;
+    Array.from(document.querySelectorAll('.content')).forEach(content => {
+        const onebox = content.querySelector('.onebox');
+        if (onebox) {
+            onebox.hidden = false;
         }
     });
 }
