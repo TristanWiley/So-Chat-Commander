@@ -7,6 +7,6 @@ So far there are three commands here
 - /uncollapse
 - /giphy <Phrase/Word>
 
-So collapse and uncollapse are self explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.)
+So collapse and uncollapse are self-explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.)
 
 /giphy will send a Gifs to the chat according to anything you send after it.
