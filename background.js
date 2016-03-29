@@ -3,23 +3,23 @@
 window.addEventListener('keydown', e => {
     //Commands only requring /command, no extra text. Messy, I know, I don't really care.
     var key = e.which || e.keyCode;
-    if (key === 13) { // 13 is enter
-
+    
+    if (key !== 13) return;
+    
+    e.stopPropagation();
+    
     if (input.value === '/collapse') {
-        collapseAll();
         input.value = '';
-        e.stopPropagation();
-    } else if (input.value === '/uncollapse') {
-        unCollapseAll();
-        input.value = '';
-        e.stopPropagation();
-    } else if (input.value.split(/\s+/)[0] === '/giphy') {
-        // giphyStuff(input.value);
-        var result = input.value.substr(input.value.indexOf(" "));
-        giphyStuff(result.match(/\s(.*)/));
-        e.stopPropagation();
+        return collapseAll();
     }
-    }    
+    if (input.value === '/uncollapse') {
+        input.value = '';
+        return unCollapseAll();
+    }
+    if (input.value.split(/\s+/)[0] === '/giphy') {
+        const result = input.value.substr(input.value.indexOf(' '));
+        giphyStuff(result.match(/\s(.*)/));
+    }
 }, true);
 
 //NEVER GONNA GIVE YOU UP
@@ -28,28 +28,30 @@ window.addEventListener('keydown', e => {
 //Honestly it's self explanatory
 //tristanwiley.com
 function collapseAll() {
-    $('.content').each(function(i, obj) {
-        var elem = $(obj).children()[0];
-        if ($(elem).hasClass("onebox")) {
-            $(elem).hide();
+    Array.from(document.querySelectorAll('.content')).forEach(obj => {
+        const elem = obj.firstElementChild
+        if (elem.classList.contains('onebox')) {
+            elem.hidden = true;
         }
     });
 }
 
 function unCollapseAll() {
-    $('.content').each(function(i, obj) {
-        var elem = $(obj).children()[0];
-        if ($(elem).hasClass("onebox")) {
-            $(elem).show();
+    Array.from(document.querySelectorAll('.content')).forEach(obj => {
+        const elem = obj.firstElementChild
+        if (elem.classList.contains('onebox')) {
+            elem.hidden = false;
         }
     });
 }
 
 function giphyStuff(searchText) {
-    $.getJSON("https://api.giphy.com/v1/gifs/search?q=" + searchText + "&api_key=dc6zaTOxFJmzC", function(json) {
-        var url = json.data[0].images.fixed_height.url;
+    fetch(`https://api.giphy.com/v1/gifs/search?q=${ searchText }&api_key=dc6zaTOxFJmzC`)
+    .then(response => response.json())
+    .then(json => {
+        const url = json.data[0].images.fixed_height.url;
         input.value = url;
-        $('#sayit-button').click();
+        document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
     });
 }
 
