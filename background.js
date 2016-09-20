@@ -28,6 +28,11 @@ window.addEventListener('keydown', e => {
         getSkeet();
         input.value = '';
         e.stopPropagation;
+    } else if (input.value == '/shruggie') {
+        input.value = '¯\\\\_(ツ)_/¯';
+        document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
+        input.value = '';
+        e.stopPropagation();
     }
 }, true);
 
