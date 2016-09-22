@@ -33,10 +33,10 @@ window.addEventListener('keydown', e => {
         input.value = '';
         e.stopPropagation;
     } else if (input.value == '/shruggie') {
+        e.stopPropagation();
         input.value = '¯\\\\_(ツ)_/¯';
         document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
         input.value = '';
-        e.stopPropagation();
     }
 }, true);
 
