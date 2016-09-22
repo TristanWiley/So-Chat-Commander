@@ -6,6 +6,7 @@ So far there are three commands here
 - /collapse
 - /uncollapse
 - /giphy <Phrase/Word>
+- /shruggie
 
 So collapse and uncollapse are self-explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.)
 
