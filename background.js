@@ -19,7 +19,11 @@ window.addEventListener('keydown', e => {
     if (input.value.split(/\s+/)[0] === '/giphy') {
         e.stopPropagation();
         const result = input.value.substr(input.value.indexOf(' '));
-        giphyStuff(result.match(/\s(.*)/));
+        giphyStuff(result.match(/\s(.*)/), false);
+    } else if (input.value.split(/\s+/)[0] === '/glink'){
+        e.stopPropagation();
+        const result = input.value.substr(input.value.indexOf(' '));
+        giphyStuff(result.match(/\s(.*)/), true);
     } else if (input.value == '/norris'){
         getNorris();
         input.value = '';
@@ -80,15 +84,20 @@ function getSkeet(){
     });
 }
 
-function giphyStuff(searchText) {
-    fetch(`https://api.giphy.com/v1/gifs/search?q=${ searchText }&api_key=dc6zaTOxFJmzC`)
+function giphyStuff(searchText, shorten) {
+    fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText[1]}&api_key=dc6zaTOxFJmzC`)
     .then(response => response.json())
     .then(json => {
         const url = json.data[0].images.fixed_height.url;
+        if(shorten){
+            input.value = "[" + searchText[1] + "]" + "(" + url + ")";
+        }else{
         input.value = url;
+        }
         document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
     });
 }
+
 //The time spent adding random comments could actually have been used to put in helpful comments. 
 //tooooo baaad
 //TODO actually work on stuff
