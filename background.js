@@ -1,7 +1,5 @@
 (function() {
 	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
-    console.log(ignoreList)
-
 	var command = function(name, callback){
 		this.name = name;
 		this.callback = callback;
@@ -110,10 +108,10 @@
 	}
 	
     var targetNode = document.querySelector("#main #chat")
-    var observerConfig = {
+    const observerConfig = {
         childList: true
     }
-    var observer = new MutationObserver(function(mutations) {
+    const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
                 removeIgnoredUsers(node)
@@ -122,8 +120,7 @@
     })
     observer.observe(targetNode, observerConfig)	
 
-    window.addEventListener('keydown', e => {
-		
+    window.addEventListener('keydown', e => {		
 		var key = e.which || e.keyCode;
 		
 		if (input.value.indexOf('/') === 0){
@@ -167,7 +164,6 @@
 			clearInput();
 			
 		}        
-		
     }, true);
 
     //NEVER GONNA GIVE YOU UP
@@ -253,7 +249,7 @@
         }
     }
 
-//The time spent adding random comments could actually have been used to put in helpful comments.
+    //The time spent adding random comments could actually have been used to put in helpful comments.
     function getCat(){
         fetch(`https://thecatapi.com/api/images/get?format=html&type=png`)
             .then(response => response.text())
@@ -264,9 +260,9 @@
     }
 
     function removeIgnoredUsers(node) {
-        var el = node.querySelector("a .username")
+        const el = node.querySelector("a .username")
         if (el) {
-            var name = el.innerHTML
+            const name = el.innerHTML
         }
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
