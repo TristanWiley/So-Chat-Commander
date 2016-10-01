@@ -180,16 +180,22 @@
                 successText.attributes.class = "user-container"
                 targetNode.appendChild(successText)
                 ignoreList.push(name)
+                updateStorage()
                 localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
                         ignoreList = ignoreList.filter(function(item) {
                             return item != name
                         })
+                        updateStorage()
                     }, time * 60000)
                 }
             }
         })
+    }
+
+    function updateStorage() {
+        localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
     }
 
     //The time spent adding random comments could actually have been used to put in helpful comments.
