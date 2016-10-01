@@ -2,12 +2,12 @@
   "manifest_version": 2,
 
   "name": "SO Chat Commander",
-  "description": "This extension will collapse all outboxed items in Stackoverflow Chat rooms (Images, videos, etc.)!",
-  "version": "1.3",
+  "description": "This extension acts as an aide for StackExchange Chat users and provides different local commands to help you!",
+  "version": "1.4",
   "content_scripts": [
     {
-		"matches" : ["*://chat.stackoverflow.com/*","*://chat.stackexchange.com/*","*://chat.meta.stackexchange.com/*"],
-     "js":["background.js"]
+		  "matches" : ["*://chat.stackoverflow.com/*","*://chat.stackexchange.com/*","*://chat.meta.stackexchange.com/*"],
+      "js":["background.js"]
     }
   ],
   "browser_action": {
