@@ -272,11 +272,15 @@
     }
 	
 	function flipACoin() {
-		sendMessage(Math.floor(Math.random()*2));
+        if(Math.floor(Math.random()*2) == 0){
+            sendMessage("I flipped a coin and it was heads");
+        }else{
+            sendMessage("I flipped a coin and it was tails");
+        }
 	}
 	
 	function rollADice() {
-		sendMessage(Math.floor(Math.random()*6+1));
+		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
 	}
 
 })();
