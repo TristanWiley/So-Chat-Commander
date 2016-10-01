@@ -1,6 +1,6 @@
 (function() {
-    var ignoreList = []
-
+    var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
+    console.log(ignoreList)
     //Before we begin this tortuous journey, let us thank all the developers that died making this (none) and all of the developers
     //who painfully cried while realizing they were idiots (me).
 
@@ -168,7 +168,7 @@
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
         }
-        console.log(name)
+        // console.log(name)
     }
 
     function ignoreUsers(parts, time) {
@@ -180,6 +180,7 @@
                 successText.attributes.class = "user-container"
                 targetNode.appendChild(successText)
                 ignoreList.push(name)
+                localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
                         ignoreList = ignoreList.filter(function(item) {
