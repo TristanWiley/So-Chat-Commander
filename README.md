@@ -11,11 +11,16 @@ So far, this commands are implemented
 - `/shruggie`
 - `/replyLast <username> <message>` 
 - `/cat`
+<<<<<<< HEAD
 - `/norris`
 - `/skeet`
 - `/ignore <username> <time>`
 - `/coin`
 - `/dice`
+=======
+- `/ignore <usernames...> [minutes]`
+- `/unignore <usernames...>`
+>>>>>>> master
 
 So collapse and uncollapse are self-explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.) and collapse it.
 

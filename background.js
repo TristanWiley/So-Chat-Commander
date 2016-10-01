@@ -28,7 +28,8 @@
 					 new command('glink', giphyShorten),
 					 new command('ignore', ignoreUsers),
 					 new command('coin', flipACoin),
-					 new command('dice', rollADice)];
+					 new command('dice', rollADice),
+					 new command('unignore', unignoreUsers)];
 
 	function clearInput() {
 		input.value = '';
@@ -279,21 +280,59 @@
         parts.forEach((item) => {
             if (item.charAt(0) === "@") {
                 var name = item.slice(1)
-                var successText = document.createElement("div")
-                successText.innerHTML = `${name} is muted`
-                successText.attributes.class = "user-container"
-                targetNode.appendChild(successText)
+                displayMessage(`${name} is muted`)
                 ignoreList.push(name)
-                localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+                updateStore()
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
                         ignoreList = ignoreList.filter(function(item) {
                             return item != name
                         })
+                        updateStore()
                     }, time * 60000)
                 }
             }
         })
+    }
+	
+	function flipACoin() {
+        if(Math.floor(Math.random()*2) == 0){
+            sendMessage("I flipped a coin and it was heads");
+        }else{
+            sendMessage("I flipped a coin and it was tails");
+        }
+	}
+	
+	function rollADice() {
+		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
+	}
+
+    function displayMessage(message) {
+    	var messageNode = document.createElement("div")
+        messageNode.innerHTML = message
+        messageNode.attributes.class = "user-container"
+        targetNode.appendChild(messageNode)
+    }
+
+    function unignoreUsers(parameters) {
+    	var parts = parameters
+    	parts.forEach(item => {
+    		if (item.charAt(0) === "@") {
+    			const name = item.slice(1)
+    			const oldLength = ignoreList.length
+    			ignoreList = ignoreList.filter(function(item) {
+                    return item != name
+                })
+                updateStore()
+                if (oldLength > ignoreList.length) {
+                	displayMessage(`${name} has been unmuted`)
+                }
+    		}
+    	})
+    }
+
+    function updateStore() {
+    	localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
     }
 	
 	function flipACoin() {
