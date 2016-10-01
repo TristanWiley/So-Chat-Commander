@@ -1,14 +1,14 @@
 (function() {
-    var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
+    let ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
     console.log(ignoreList)
     //Before we begin this tortuous journey, let us thank all the developers that died making this (none) and all of the developers
     //who painfully cried while realizing they were idiots (me).
 
-    var targetNode = document.querySelector("#main #chat")
-    var observerConfig = {
+    const targetNode = document.querySelector("#main #chat")
+    const observerConfig = {
         childList: true
     }
-    var observer = new MutationObserver(function(mutations) {
+    const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
                 removeIgnoredUsers(node)
@@ -19,7 +19,7 @@
 
     window.addEventListener('keydown', e => {
         //Commands only requring /command, no extra text. Messy, I know, I don't really care.
-        var key = e.which || e.keyCode;
+        const key = e.which || e.keyCode;
 
         if (key !== 13) return;
 
@@ -56,20 +56,25 @@
             input.value = '';
         } else if (input.value.split(/\s+/)[0] === '/replyLast'){
             e.stopPropagation();
-            var username = input.value.split(/\s+/)[1];
-            var messagetosend = input.value.substr(input.value.indexOf(input.value.split(/\s+/)[2]));
+            const username = input.value.split(/\s+/)[1];
+            const messagetosend = input.value.substr(input.value.indexOf(input.value.split(/\s+/)[2]));
             replyLast(username.replace(/@/g , ""), messagetosend);
             input.value = '';
         } else if (input.value.split(/\s+/)[0].trim() === "/ignore") {
             e.stopPropagation()
-            var parts = input.value.split(/\s+/).slice(1)
-            var time = parts[parts.length-1].match(/^\d+$/) ? parts[parts.length-1] : -1
+            const parts = input.value.split(/\s+/).slice(1)
+            const time = parts[parts.length-1].match(/^\d+$/) ? parts[parts.length-1] : -1
             ignoreUsers(parts, parseInt(time))
             input.value = ""
         } else if (input.value == '/cat') {
             e.stopPropagation();
             getCat();
             input.value = '';
+        } else if (input.value.split(/\s+/)[0].trim() === "/unignore") {
+            e.stopPropagation()
+            const parts = input.value.split(/\s+/).slice(1)
+            unignoreUsers(parts)
+            input.value = ""
         }
     }, true);
 
@@ -101,7 +106,7 @@
         fetch(`https://jsonp.afeld.me/?url=http://api.icndb.com/jokes/random`)
             .then(response => response.json())
             .then(json => {
-                var joke = json.value.joke;
+                const joke = json.value.joke;
                 input.value = joke;
                 document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
             });
@@ -111,7 +116,7 @@
         fetch(`https://jsonp.afeld.me/?url=http://tristanwiley.com/labs/skeet/v1/`)
             .then(response => response.json())
             .then(json => {
-                var joke = json.JOKES;
+                const joke = json.JOKES;
                 input.value = joke;
                 document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
             });
@@ -132,16 +137,16 @@
     }
 
     function replyLast(usern, message) {
-        var username = usern.replace(/\s/g, '');
-        var signatures = document.getElementsByClassName('tiny-signature');
-        for (var i = signatures.length-1; i > 0; --i) {
-            var item = signatures[i];
-            var itemusername = item.getElementsByClassName('username')[0].innerHTML.replace(/\s/g, '');
+        const username = usern.replace(/\s/g, '');
+        const signatures = document.getElementsByClassName('tiny-signature');
+        for (let i = signatures.length-1; i > 0; --i) {
+            const item = signatures[i];
+            const itemusername = item.getElementsByClassName('username')[0].innerHTML.replace(/\s/g, '');
             if(username == itemusername) {
-                var parent = item.parentNode.parentNode;
-                var elements = parent.getElementsByClassName('messages')[0].getElementsByClassName('message');
-                var id = elements[elements.length-1].id.replace('message-','');
-                var send = ":" + id + " " + message;
+                const parent = item.parentNode.parentNode;
+                const elements = parent.getElementsByClassName('messages')[0].getElementsByClassName('message');
+                const id = elements[elements.length-1].id.replace('message-','');
+                const send = ":" + id + " " + message;
                 input.value = send;
                 document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
                 break;
@@ -149,21 +154,21 @@
         }
     }
 
-//The time spent adding random comments could actually have been used to put in helpful comments.
+    //The time spent adding random comments could actually have been used to put in helpful comments.
     function getCat(){
         fetch(`https://thecatapi.com/api/images/get?format=html&type=png`)
             .then(response => response.text())
             .then(text => {
-                var url = text.substring(text.indexOf('<img src="')+10,text.indexOf('"></a>'));
+                const url = text.substring(text.indexOf('<img src="')+10,text.indexOf('"></a>'));
                 input.value = url;
                 document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
             });
     }
 
     function removeIgnoredUsers(node) {
-        var el = node.querySelector("a .username")
+        const el = node.querySelector("a .username")
         if (el) {
-            var name = el.innerHTML
+            const name = el.innerHTML
         }
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
@@ -174,24 +179,38 @@
     function ignoreUsers(parts, time) {
         parts.forEach((item) => {
             if (item.charAt(0) === "@") {
-                var name = item.slice(1)
-                var successText = document.createElement("div")
-                successText.innerHTML = `${name} is muted`
-                successText.attributes.class = "user-container"
-                targetNode.appendChild(successText)
+                const name = item.slice(1)
+                displayMessage(`${name} is muted`)
                 ignoreList.push(name)
                 updateStorage()
                 localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
                 if (time != -1 && time > 0) {
-                    setTimeout(() => {
-                        ignoreList = ignoreList.filter(function(item) {
-                            return item != name
-                        })
-                        updateStorage()
-                    }, time * 60000)
+                    setTimeout(removeNameFromList.bind(this, name), time * 60000)
                 }
             }
         })
+    }
+
+    function unignoreUsers(parts) {
+        parts.forEach(function(item) {
+            const name = item.slice(1)
+            removeNameFromList(name)
+            displayMessage(`${name} has been unignored`)
+        })
+    }
+
+    function removeNameFromList(name) {
+        ignoreList = ignoreList.filter(function(item) {
+            return item != name
+        })
+        updateStorage()
+    }
+
+    function displayMessage(text) {
+        const textNode = document.createElement("div")
+        textNode.innerHTML = text
+        textNode.attributes.class = "user-container"
+        targetNode.appendChild(textNode)
     }
 
     function updateStorage() {
