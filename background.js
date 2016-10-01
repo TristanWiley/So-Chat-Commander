@@ -1,5 +1,6 @@
 (function() {
-    var ignoreList = []
+	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
+    console.log(ignoreList)
 
 	var command = function(name, callback){
 		this.name = name;
@@ -283,6 +284,7 @@
                 successText.attributes.class = "user-container"
                 targetNode.appendChild(successText)
                 ignoreList.push(name)
+                localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
                         ignoreList = ignoreList.filter(function(item) {
