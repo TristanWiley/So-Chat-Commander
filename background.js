@@ -61,11 +61,11 @@
             replyLast(username.replace(/@/g , ""), messagetosend);
             input.value = '';
         } else if (input.value.split(/\s+/)[0].trim() === "/ignore") {
-            console.log("triggered 1")
             e.stopPropagation()
             var parts = input.value.split(/\s+/).slice(1)
             var time = parts[parts.length-1].match(/^\d+$/) ? parts[parts.length-1] : -1
             ignoreUsers(parts, parseInt(time))
+            input.value = ""
         } else if (input.value == '/cat') {
             e.stopPropagation();
             getCat();
