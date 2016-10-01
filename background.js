@@ -27,7 +27,7 @@
 					 new command('glink', giphyShorten),
 					 new command('ignore', ignoreUsers),
 					 new command('coin', flipACoin),
-					 new command('dice', rollADice),];
+					 new command('dice', rollADice)];
 
 	function clearInput() {
 		input.value = '';
@@ -49,10 +49,28 @@
 			popup.parentNode.removeChild(popup);
 	}
 	
+	function commandClicked(){
+		input.value = "/" + this.innerHTML;
+		input.focus();
+		removePopup();
+	}
+	
 	function displayPopup(possibleCommands){
 		var popup = document.getElementById('commands-list');
 		if (popup) {
-			popup.innerHTML = possibleCommands.join(", ");
+
+			while (popup.firstChild) {
+				popup.removeChild(popup.firstChild);
+			}
+			
+			for (var i = 0; i < possibleCommands.length; i++) {
+				var tempCommand = document.createElement('span');
+				tempCommand.style = 'margin: 4px;';
+				tempCommand.innerHTML = possibleCommands[i];
+				tempCommand.onclick = commandClicked;
+				popup.appendChild(tempCommand);
+			}
+			
 		}
 		else {
 			var element = document.createElement("div");
@@ -74,7 +92,13 @@
 			commandsList.className = 'commands-list';
 			commandsList.id = 'commands-list';
 			
-			commandsList.innerHTML = possibleCommands.join(", ");
+			for (var i = 0; i < possibleCommands.length; i++) {
+				var tempCommand = document.createElement('span');
+				tempCommand.style = 'margin: 4px;';
+				tempCommand.innerHTML = possibleCommands[i];
+				tempCommand.onclick = commandClicked;
+				commandsList.appendChild(tempCommand);
+			}
 			
 			element.appendChild(closeButton);
 			element.appendChild(commandsList);
@@ -279,7 +303,7 @@
 	}
 	
 	function rollADice() {
-		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
+		sendMessage("I rolled a dice and it was a " + Math.floor(Math.random()*6+1));
 	}
 
 })();
