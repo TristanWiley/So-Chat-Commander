@@ -23,7 +23,7 @@ So collapse and uncollapse are self-explanatory, they take any onebox chat messa
 
 `/glink` will send a link to gif according to anything you send after it.
 
-`/shruggie` will send a `¯\\_(ツ)_/¯`.
+`/shruggie` will send a `¯\_(ツ)_/¯`.
 
 `/replyLast` will reply to the last message `<username>` sent with the message `<message>`.
 
