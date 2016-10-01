@@ -13,6 +13,9 @@ So far there are these commands here
 So collapse and uncollapse are self-explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.) and collapse it
 
 /giphy will send a Gifs to the chat according to anything you send after it.
-/shruggie will send a ¯\_(ツ)_/¯
+
+/shruggie will send a ¯\\_(ツ)_/¯
+
 /replyLast will reply to the last message  <username> sent with the message <message>.
+
 /cat will post a random cat picture
