@@ -1,5 +1,5 @@
 # So-Chat-Commander
-Chat Commander is a client side Chrome extension that integrates commands for your use.  
+Chat Commander is a client side Chrome extension that integrates commands for your use on any Stackexchange Chat.  
 
 So far there are these commands here
 
