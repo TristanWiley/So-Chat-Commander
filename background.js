@@ -37,6 +37,11 @@ window.addEventListener('keydown', e => {
         input.value = '¯\\\\_(ツ)_/¯';
         document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
         input.value = '';
+    } else if (input.value.split(/\s+/)[0] === '/replyLast'){
+        e.stopPropagation();
+        username = input.value.split(/\s+/)[1];
+        var messagetosend = input.value.substr(input.value.indexOf(input.value.split(/\s+/)[2]));
+        replyLast(username.replace(/@/g , ""), messagetosend);
     }
 }, true);
 
@@ -96,6 +101,24 @@ function giphyStuff(searchText, shorten) {
         }
         document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
     });
+}
+
+function replyLast(usern, message) {
+    var username = usern.replace(/\s/g, '');
+    var signatures = document.getElementsByClassName('tiny-signature');
+    for (var i = signatures.length-1; i > 0; --i) {
+        var item = signatures[i];
+        var itemusername = item.getElementsByClassName('username')[0].innerHTML.replace(/\s/g, '');
+        if(username == itemusername) {
+            var parent = item.parentNode.parentNode;
+            var elements = parent.getElementsByClassName('messages')[0].getElementsByClassName('message');
+            var id = elements[elements.length-1].id.replace('message-','');
+            var send = ":" + id + " " + message;
+            input.value = send;
+            document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+            break;
+        }
+    }
 }
 
 //The time spent adding random comments could actually have been used to put in helpful comments. 
