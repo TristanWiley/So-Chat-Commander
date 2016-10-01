@@ -65,7 +65,7 @@
 			
 			for (var i = 0; i < possibleCommands.length; i++) {
 				var tempCommand = document.createElement('span');
-				tempCommand.style = 'margin: 4px;';
+				tempCommand.style = 'margin: 4px; cursor: pointer;';
 				tempCommand.innerHTML = possibleCommands[i];
 				tempCommand.onclick = commandClicked;
 				popup.appendChild(tempCommand);
@@ -303,7 +303,7 @@
 	}
 	
 	function rollADice() {
-		sendMessage("I rolled a dice and it was a " + Math.floor(Math.random()*6+1));
+		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
 	}
 
 })();
