@@ -167,7 +167,6 @@
         }
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
-            console.log("removed elems")
         }
         console.log(name)
     }
@@ -176,6 +175,10 @@
         parts.forEach((item) => {
             if (item.charAt(0) === "@") {
                 var name = item.slice(1)
+                var successText = document.createElement("div")
+                successText.innerHTML = `${name} is muted`
+                successText.attributes.class = "user-container"
+                targetNode.appendChild(successText)
                 ignoreList.push(name)
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
