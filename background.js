@@ -1,9 +1,88 @@
 (function() {
     var ignoreList = []
 
-    //Before we begin this tortuous journey, let us thank all the developers that died making this (none) and all of the developers
-    //who painfully cried while realizing they were idiots (me).
+	var command = function(name, callback){
+		this.name = name;
+		this.callback = callback;
+		this.execute = function(parameters) {
+			this.callback(parameters);
+		}
+	}
+	
+	function findCommand(name) {
+		for (var i = 0; i < commands.length; i++)
+			if (commands[i].name === name)
+				return commands[i];
+		return undefined;
+	}
+	
+	var commands = [ new command('collapse', collapseAll),
+					 new command('uncollapse', unCollapseAll),
+					 new command('shruggie', shruggie),
+					 new command('norris', getNorris),
+					 new command('skeet', getSkeet),
+					 new command('cat', getCat),
+					 new command('replyLast', replyLast),
+					 new command('giphy', giphyStuff),
+					 new command('glink', giphyShorten),
+					 new command('ignore', ignoreUsers),
+					 new command('coin', flipACoin),
+					 new command('dice', rollADice),];
 
+	function clearInput() {
+		input.value = '';
+	}
+	
+	function sendMessage(message) {
+		input.value = message;
+        document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
+	}
+	
+	function sendLink(name, url) {
+		input.value = "[" + name + "]" + "(" + url + ")";
+		document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
+	}
+	
+	function removePopup(){
+		var popup = document.getElementById('commands-popup');
+		if (popup)
+			popup.parentNode.removeChild(popup);
+	}
+	
+	function displayPopup(possibleCommands){
+		var popup = document.getElementById('commands-list');
+		if (popup) {
+			popup.innerHTML = possibleCommands.join(", ");
+		}
+		else {
+			var element = document.createElement("div");
+			element.id = "commands-popup";
+			
+			element.className = "popup";
+			element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
+			
+			var inputArea = document.getElementById('input-area');
+			
+			var closeButton = document.createElement('div');
+			closeButton.className = 'btn-close';
+			closeButton.id = 'close-commands-popup';
+			closeButton.innerHTML = 'X';
+			
+			closeButton.onclick = removePopup;
+			
+			var commandsList = document.createElement('div');
+			commandsList.className = 'commands-list';
+			commandsList.id = 'commands-list';
+			
+			commandsList.innerHTML = possibleCommands.join(", ");
+			
+			element.appendChild(closeButton);
+			element.appendChild(commandsList);
+			
+			inputArea.appendChild(element);
+		}
+	}
+	
     var targetNode = document.querySelector("#main #chat")
     var observerConfig = {
         childList: true
@@ -15,64 +94,56 @@
             })
         })
     })
-    observer.observe(targetNode, observerConfig)
+    observer.observe(targetNode, observerConfig)	
 
     window.addEventListener('keydown', e => {
-        //Commands only requring /command, no extra text. Messy, I know, I don't really care.
-        var key = e.which || e.keyCode;
+		
+		var key = e.which || e.keyCode;
+		
+		if (input.value.indexOf('/') === 0){
+			
+			var enteredText = input.value;
+			var data = enteredText.split(' ');
+			var commandName = data.length > 0 ? data[0].substring(1) : '';
+			
+			var possibleCommands = [];
+				for (var i = 0; i < commands.length; i++)
+					if (commands[i].name.indexOf(commandName) === 0)
+						possibleCommands.push(commands[i].name);
+				
+			displayPopup(possibleCommands);
+			
+			if (possibleCommands.length === 0)
+				removePopup();
+		}
+		
+		if (key !== 13)
+			return;
+		
+		removePopup();
 
-        if (key !== 13) return;
-
-        if (input.value === '/collapse') {
-            e.stopPropagation();
-            collapseAll();
-            return input.value = '';
-        }
-        if (input.value === '/uncollapse') {
-            e.stopPropagation();
-            unCollapseAll();
-            input.value = '';
-        }
-        if (input.value.split(/\s+/)[0] === '/giphy') {
-            e.stopPropagation();
-            const result = input.value.substr(input.value.indexOf(' '));
-            giphyStuff(result.match(/\s(.*)/), false);
-        } else if (input.value.split(/\s+/)[0] === '/glink'){
-            e.stopPropagation();
-            const result = input.value.substr(input.value.indexOf(' '));
-            giphyStuff(result.match(/\s(.*)/), true);
-        } else if (input.value == '/norris'){
-            getNorris();
-            input.value = '';
-            e.stopPropagation;
-        } else if (input.value == '/skeet'){
-            getSkeet();
-            input.value = '';
-            e.stopPropagation;
-        } else if (input.value == '/shruggie') {
-            e.stopPropagation();
-            input.value = '¯\\\\_(ツ)_/¯';
-            document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
-            input.value = '';
-        } else if (input.value.split(/\s+/)[0] === '/replyLast'){
-            e.stopPropagation();
-            var username = input.value.split(/\s+/)[1];
-            var messagetosend = input.value.substr(input.value.indexOf(input.value.split(/\s+/)[2]));
-            replyLast(username.replace(/@/g , ""), messagetosend);
-            input.value = '';
-        } else if (input.value.split(/\s+/)[0].trim() === "/ignore") {
-            e.stopPropagation()
-            var parts = input.value.split(/\s+/).slice(1)
-            var time = parts[parts.length-1].match(/^\d+$/) ? parts[parts.length-1] : -1
-            ignoreUsers(parts, parseInt(time))
-            input.value = ""
-        } else if (input.value == '/cat') {
-            e.stopPropagation();
-            getCat();
-            input.value = '';
-        }
+		e.stopPropagation();
+		
+		if (input.value.indexOf('/') === 0){
+			
+			var enteredText = input.value.trim();
+			
+			var data = enteredText.split(/\s+/);
+			
+			var commandName = data.length > 0 ? data[0].substring(1) : '';
+			var additionalParameters = data.length > 1 ? data.slice(1, data.length) : [];
+			
+			var temp_command = findCommand(commandName);
+			
+			if (temp_command) {
+				temp_command.execute(additionalParameters);
+			}
+			
+			clearInput();
+			
+		}        
+		
     }, true);
-
 
     //NEVER GONNA GIVE YOU UP
     //NEVER GONNA LET YOU DOWN
@@ -96,14 +167,17 @@
             }
         });
     }
+	
+	function shruggie(){
+		sendMessage('¯\\\\_(ツ)_/¯');
+	};
 
     function getNorris() {
         fetch(`https://jsonp.afeld.me/?url=http://api.icndb.com/jokes/random`)
             .then(response => response.json())
             .then(json => {
                 var joke = json.value.joke;
-                input.value = joke;
-                document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+				sendMessage(joke);
             });
     }
 
@@ -112,27 +186,33 @@
             .then(response => response.json())
             .then(json => {
                 var joke = json.JOKES;
-                input.value = joke;
-                document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+                sendMessage(joke);
             });
     }
 
-    function giphyStuff(searchText, shorten) {
-        fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText[1]}&api_key=dc6zaTOxFJmzC`)
+    function giphyStuff(parameters) {
+		var searchText = encodeURI(parameters.join(' '));
+        fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
             .then(response => response.json())
             .then(json => {
                 const url = json.data[0].images.fixed_height.url;
-                if(shorten){
-                    input.value = "[" + searchText[1] + "]" + "(" + url + ")";
-                }else{
-                    input.value = url;
-                }
-                document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+					sendMessage(url);
             });
     }
+	
+	function giphyShorten(parameters) {
+		var searchText = encodeURI(parameters.join(' '));
+        fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
+            .then(response => response.json())
+            .then(json => {
+                const url = json.data[0].images.fixed_height.url;
+					sendLink(parameters.join(' '), url);
+            });
+	}
 
-    function replyLast(usern, message) {
-        var username = usern.replace(/\s/g, '');
+    function replyLast(parameters) {
+        var username = parameters[0].replace(/\s/g, '');
+		var message = parameters.slice(1, parameters.length).join(' ');
         var signatures = document.getElementsByClassName('tiny-signature');
         for (var i = signatures.length-1; i > 0; --i) {
             var item = signatures[i];
@@ -142,8 +222,7 @@
                 var elements = parent.getElementsByClassName('messages')[0].getElementsByClassName('message');
                 var id = elements[elements.length-1].id.replace('message-','');
                 var send = ":" + id + " " + message;
-                input.value = send;
-                document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+				sendMessage(send);
                 break;
             }
         }
@@ -155,8 +234,7 @@
             .then(response => response.text())
             .then(text => {
                 var url = text.substring(text.indexOf('<img src="')+10,text.indexOf('"></a>'));
-                input.value = url;
-                document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+				sendMessage(url);
             });
     }
 
@@ -168,10 +246,12 @@
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
         }
-        console.log(name)
     }
 
-    function ignoreUsers(parts, time) {
+    function ignoreUsers(parameters) {
+		var parts = parameters;
+        var time = parts[parts.length-1].match(/^\d+$/) ? parts[parts.length-1] : -1;
+		time = parseInt(time);
         parts.forEach((item) => {
             if (item.charAt(0) === "@") {
                 var name = item.slice(1)
@@ -190,8 +270,13 @@
             }
         })
     }
+	
+	function flipACoin() {
+		sendMessage(Math.floor(Math.random()*2));
+	}
+	
+	function rollADice() {
+		sendMessage(Math.floor(Math.random()*6+1));
+	}
 
-    //The time spent adding random comments could actually have been used to put in helpful comments.
-    //tooooo baaad
-    //TODO actually work on stuff
-})()
+})();
