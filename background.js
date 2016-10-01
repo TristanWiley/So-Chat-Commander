@@ -3,9 +3,9 @@
 window.addEventListener('keydown', e => {
     //Commands only requring /command, no extra text. Messy, I know, I don't really care.
     var key = e.which || e.keyCode;
-    
+
     if (key !== 13) return;
-    
+
     if (input.value === '/collapse') {
         e.stopPropagation();
         collapseAll();
@@ -42,6 +42,11 @@ window.addEventListener('keydown', e => {
         username = input.value.split(/\s+/)[1];
         var messagetosend = input.value.substr(input.value.indexOf(input.value.split(/\s+/)[2]));
         replyLast(username.replace(/@/g , ""), messagetosend);
+        input.value = '';
+    } else if (input.value == '/cat') {
+      e.stopPropagation();
+      getCat();
+      input.value = '';
     }
 }, true);
 
@@ -122,5 +127,16 @@ function replyLast(usern, message) {
 }
 
 //The time spent adding random comments could actually have been used to put in helpful comments. 
+function getCat(){
+  fetch(`https://thecatapi.com/api/images/get?format=html&type=png`)
+  .then(response => response.text())
+  .then(text => {
+      var url = text.substring(text.indexOf('<img src="')+10,text.indexOf('"></a>'));
+      input.value = url;
+      document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'))
+  });
+}
+
+//The time spent adding random comments could actually have been used to put in helpful comments.
 //tooooo baaad
 //TODO actually work on stuff
