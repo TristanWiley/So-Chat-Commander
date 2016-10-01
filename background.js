@@ -122,10 +122,9 @@
 		
 		removePopup();
 
-		e.stopPropagation();
 		
 		if (input.value.indexOf('/') === 0){
-			
+			e.stopPropagation();
 			var enteredText = input.value.trim();
 			
 			var data = enteredText.split(/\s+/);
