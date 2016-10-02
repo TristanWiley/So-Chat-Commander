@@ -1,6 +1,5 @@
 (function() {
-    var ignoreList = []
-
+	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
 	var command = function(name, callback){
 		this.name = name;
 		this.callback = callback;
@@ -27,7 +26,8 @@
 					 new command('glink', giphyShorten),
 					 new command('ignore', ignoreUsers),
 					 new command('coin', flipACoin),
-					 new command('dice', rollADice)];
+					 new command('dice', rollADice),
+					 new command('unignore', unignoreUsers)];
 
 	function clearInput() {
 		input.value = '';
@@ -108,10 +108,10 @@
 	}
 	
     var targetNode = document.querySelector("#main #chat")
-    var observerConfig = {
+    const observerConfig = {
         childList: true
     }
-    var observer = new MutationObserver(function(mutations) {
+    const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
                 removeIgnoredUsers(node)
@@ -120,8 +120,7 @@
     })
     observer.observe(targetNode, observerConfig)	
 
-    window.addEventListener('keydown', e => {
-		
+    window.addEventListener('keydown', e => {		
 		var key = e.which || e.keyCode;
 		
 		if (input.value.indexOf('/') === 0){
@@ -165,7 +164,6 @@
 			clearInput();
 			
 		}        
-		
     }, true);
 
     //NEVER GONNA GIVE YOU UP
@@ -251,7 +249,7 @@
         }
     }
 
-//The time spent adding random comments could actually have been used to put in helpful comments.
+    //The time spent adding random comments could actually have been used to put in helpful comments.
     function getCat(){
         fetch(`https://thecatapi.com/api/images/get?format=html&type=png`)
             .then(response => response.text())
@@ -262,9 +260,9 @@
     }
 
     function removeIgnoredUsers(node) {
-        var el = node.querySelector("a .username")
+        const el = node.querySelector("a .username")
         if (el) {
-            var name = el.innerHTML
+            const name = el.innerHTML
         }
         if (ignoreList.indexOf(name) != -1) {
             targetNode.removeChild(node)
@@ -278,20 +276,59 @@
         parts.forEach((item) => {
             if (item.charAt(0) === "@") {
                 var name = item.slice(1)
-                var successText = document.createElement("div")
-                successText.innerHTML = `${name} is muted`
-                successText.attributes.class = "user-container"
-                targetNode.appendChild(successText)
+                displayMessage(`${name} is muted`)
                 ignoreList.push(name)
+                updateStore()
                 if (time != -1 && time > 0) {
                     setTimeout(() => {
                         ignoreList = ignoreList.filter(function(item) {
                             return item != name
                         })
+                        updateStore()
                     }, time * 60000)
                 }
             }
         })
+    }
+	
+	function flipACoin() {
+        if(Math.floor(Math.random()*2) == 0){
+            sendMessage("I flipped a coin and it was heads");
+        }else{
+            sendMessage("I flipped a coin and it was tails");
+        }
+	}
+	
+	function rollADice() {
+		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
+	}
+
+    function displayMessage(message) {
+    	var messageNode = document.createElement("div")
+        messageNode.innerHTML = message
+        messageNode.attributes.class = "user-container"
+        targetNode.appendChild(messageNode)
+    }
+
+    function unignoreUsers(parameters) {
+    	var parts = parameters
+    	parts.forEach(item => {
+    		if (item.charAt(0) === "@") {
+    			const name = item.slice(1)
+    			const oldLength = ignoreList.length
+    			ignoreList = ignoreList.filter(function(item) {
+                    return item != name
+                })
+                updateStore()
+                if (oldLength > ignoreList.length) {
+                	displayMessage(`${name} has been unmuted`)
+                }
+    		}
+    	})
+    }
+
+    function updateStore() {
+    	localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
     }
 	
 	function flipACoin() {
