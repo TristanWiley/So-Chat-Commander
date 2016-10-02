@@ -7,54 +7,55 @@
 			this.callback(parameters);
 		}
 	}
-	
+
 	function findCommand(name) {
-		for (var i = 0; i < commands.length; i++)
-			if (commands[i].name === name)
-				return commands[i];
-		return undefined;
+		return commands.hasOwnProperty(name) ?
+			commands[name] :
+			undefined;
 	}
-	
-	var commands = [ new command('collapse', collapseAll),
-					 new command('uncollapse', unCollapseAll),
-					 new command('shruggie', shruggie),
-					 new command('norris', getNorris),
-					 new command('skeet', getSkeet),
-					 new command('cat', getCat),
-					 new command('replyLast', replyLast),
-					 new command('giphy', giphyStuff),
-					 new command('glink', giphyShorten),
-					 new command('ignore', ignoreUsers),
-					 new command('coin', flipACoin),
-					 new command('dice', rollADice),
-					 new command('unignore', unignoreUsers)];
+
+	var commands = {
+		collapse: new command('collapse', collapseAll),
+		uncollapse: new command('uncollapse', unCollapseAll),
+		shruggie: new command('shruggie', shruggie),
+		norris: new command('norris', getNorris),
+		skeet: new command('skeet', getSkeet),
+		cat: new command('cat', getCat),
+		replyLast: new command('replyLast', replyLast),
+		giphy: new command('giphy', giphyStuff),
+		glink: new command('glink', giphyShorten),
+		ignore: new command('ignore', ignoreUsers),
+		coin: new command('coin', flipACoin),
+		dice: new command('dice', rollADice),
+		unignore: new command('unignore', unignoreUsers)
+	};
 
 	function clearInput() {
 		input.value = '';
 	}
-	
+
 	function sendMessage(message) {
 		input.value = message;
         document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
 	}
-	
+
 	function sendLink(name, url) {
 		input.value = "[" + name + "]" + "(" + url + ")";
 		document.getElementById('sayit-button').dispatchEvent(new MouseEvent('click'));
 	}
-	
+
 	function removePopup(){
 		var popup = document.getElementById('commands-popup');
 		if (popup)
 			popup.parentNode.removeChild(popup);
 	}
-	
+
 	function commandClicked(){
 		input.value = "/" + this.innerHTML;
 		input.focus();
 		removePopup();
 	}
-	
+
 	function displayPopup(possibleCommands){
 		var popup = document.getElementById('commands-list');
 		if (popup) {
@@ -62,7 +63,7 @@
 			while (popup.firstChild) {
 				popup.removeChild(popup.firstChild);
 			}
-			
+
 			for (var i = 0; i < possibleCommands.length; i++) {
 				var tempCommand = document.createElement('span');
 				tempCommand.style = 'margin: 4px; cursor: pointer;';
@@ -70,28 +71,28 @@
 				tempCommand.onclick = commandClicked;
 				popup.appendChild(tempCommand);
 			}
-			
+
 		}
 		else {
 			var element = document.createElement("div");
 			element.id = "commands-popup";
-			
+
 			element.className = "popup";
 			element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
-			
+
 			var inputArea = document.getElementById('input-area');
-			
+
 			var closeButton = document.createElement('div');
 			closeButton.className = 'btn-close';
 			closeButton.id = 'close-commands-popup';
 			closeButton.innerHTML = 'X';
-			
+
 			closeButton.onclick = removePopup;
-			
+
 			var commandsList = document.createElement('div');
 			commandsList.className = 'commands-list';
 			commandsList.id = 'commands-list';
-			
+
 			for (var i = 0; i < possibleCommands.length; i++) {
 				var tempCommand = document.createElement('span');
 				tempCommand.style = 'margin: 4px;';
@@ -99,14 +100,14 @@
 				tempCommand.onclick = commandClicked;
 				commandsList.appendChild(tempCommand);
 			}
-			
+
 			element.appendChild(closeButton);
 			element.appendChild(commandsList);
-			
+
 			inputArea.appendChild(element);
 		}
 	}
-	
+
     var targetNode = document.querySelector("#main #chat")
     const observerConfig = {
         childList: true
@@ -118,52 +119,43 @@
             })
         })
     })
-    observer.observe(targetNode, observerConfig)	
+    observer.observe(targetNode, observerConfig)
 
-    window.addEventListener('keydown', e => {		
-		var key = e.which || e.keyCode;
-		
-		if (input.value.indexOf('/') === 0){
-			
-			var enteredText = input.value;
-			var data = enteredText.split(' ');
-			var commandName = data.length > 0 ? data[0].substring(1) : '';
-			
-			var possibleCommands = [];
-				for (var i = 0; i < commands.length; i++)
-					if (commands[i].name.indexOf(commandName) === 0)
-						possibleCommands.push(commands[i].name);
-				
-			displayPopup(possibleCommands);
-			
-			if (possibleCommands.length === 0)
-				removePopup();
-		}
-		
-		if (key !== 13)
-			return;
-		
-		removePopup();
+    window.addEventListener('keydown', e => {
+			var key = e.which || e.keyCode;
 
-		
-		if (input.value.indexOf('/') === 0){
-			e.stopPropagation();
-			var enteredText = input.value.trim();
-			
-			var data = enteredText.split(/\s+/);
-			
-			var commandName = data.length > 0 ? data[0].substring(1) : '';
-			var additionalParameters = data.length > 1 ? data.slice(1, data.length) : [];
-			
-			var temp_command = findCommand(commandName);
-			
-			if (temp_command) {
-				temp_command.execute(additionalParameters);
+			if (input.value.indexOf('/') === 0){
+				var enteredText = input.value.trim();
+				var data = enteredText.split(/\s+/);
+				var commandName = data.length > 0 ? data[0].substring(1) : '';
+
+				var possibleCommands = [];
+				Object.keys(commands).forEach(function(command) {
+					if (command.indexOf(commandName) === 0)
+						possibleCommands.push(command);
+				});
+
+				displayPopup(possibleCommands);
+
+				if (possibleCommands.length === 0 || key === 13)
+					removePopup();
+
+				if (key !== 13) // "Enter" key
+					return;
+
+				// from here, the "keydown" must be a "Enter"
+				e.stopPropagation();
+
+				var additionalParameters = data.length > 1 ? data.slice(1) : [];
+				var tempCommand = findCommand(commandName);
+
+				if (tempCommand) {
+					tempCommand.execute(additionalParameters);
+				}
+
+				clearInput();
+				e.preventDefault();
 			}
-			
-			clearInput();
-			
-		}        
     }, true);
 
     //NEVER GONNA GIVE YOU UP
@@ -188,10 +180,10 @@
             }
         });
     }
-	
+
 	function shruggie(){
 		sendMessage('¯\\\\_(ツ)_/¯');
-	};
+	}
 
     function getNorris() {
         fetch(`https://jsonp.afeld.me/?url=http://api.icndb.com/jokes/random`)
@@ -220,7 +212,7 @@
 					sendMessage(url);
             });
     }
-	
+
 	function giphyShorten(parameters) {
 		var searchText = encodeURI(parameters.join(' '));
         fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
@@ -233,7 +225,7 @@
 
     function replyLast(parameters) {
         var username = parameters[0].replace(/\s/g, '');
-		var message = parameters.slice(1, parameters.length).join(' ');
+		var message = parameters.slice(1).join(' ');
         var signatures = document.getElementsByClassName('tiny-signature');
         for (var i = signatures.length-1; i > 0; --i) {
             var item = signatures[i];
@@ -290,7 +282,7 @@
             }
         })
     }
-	
+
 	function flipACoin() {
         if(Math.floor(Math.random()*2) == 0){
             sendMessage("I flipped a coin and it was heads");
@@ -298,7 +290,7 @@
             sendMessage("I flipped a coin and it was tails");
         }
 	}
-	
+
 	function rollADice() {
 		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
 	}
@@ -330,7 +322,7 @@
     function updateStore() {
     	localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
     }
-	
+
 	function flipACoin() {
         if(Math.floor(Math.random()*2) == 0){
             sendMessage("I flipped a coin and it was heads");
@@ -338,7 +330,7 @@
             sendMessage("I flipped a coin and it was tails");
         }
 	}
-	
+
 	function rollADice() {
 		sendMessage("I rolled a die and it was a " + Math.floor(Math.random()*6+1));
 	}
