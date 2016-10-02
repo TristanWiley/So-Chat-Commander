@@ -122,40 +122,82 @@
     })
     observer.observe(targetNode, observerConfig)
 
-    window.addEventListener('keydown', e => {
+		window.addEventListener('keydown', e => {
 			var key = e.which || e.keyCode;
 
-			if (input.value.indexOf('/') === 0){
-				var enteredText = input.value.trim();
+			if (key === 9 && document.getElementById('commands-list')) { // "tab"
+				var allComands = document.getElementById('commands-list').querySelectorAll('span');
+				var currCommand = document.getElementById('commands-list').querySelector('.curr-command');
+				var direction = e.shiftKey ? 'previousSibling' : 'nextSibling';
+				var newCommand;
+
+				if (currCommand === null)
+					newCommand = allComands[0];
+				else if (currCommand[direction] === null)
+					newCommand = direction === 'nextSibling' ? allComands[0] : allComands[allComands.length - 1];
+				else
+					newCommand = currCommand[direction];
+
+				if (currCommand)
+					currCommand.className = '';
+
+				newCommand.className = 'curr-command';
+
+				e.preventDefault();
+			} else if (input.value[0] === '/' && key === 13) { // "Enter"
+				var currCommand = document.getElementById('commands-list') ?
+					document.getElementById('commands-list').querySelector('.curr-command') :
+					null;
+
+				if (currCommand) {
+					e.stopPropagation();
+
+					commandClicked.call(currCommand);
+				} else {
+					var enteredText = input.value.trim();
+					var data = enteredText.split(/\s+/);
+					var commandName = data.length > 0 ? data[0].substring(1) : '';
+
+					e.stopPropagation();
+
+					var additionalParameters = data.length > 1 ? data.slice(1) : [];
+					var tempCommand = findCommand(commandName);
+
+					if (tempCommand) {
+						tempCommand.execute(additionalParameters);
+					}
+
+					clearInput();
+				}
+
+				removePopup();
+				e.preventDefault();
+			}
+		}, true);
+
+    window.addEventListener('keyup', e => {
+			var key = e.which || e.keyCode;
+			var ignoreKeys = [9, 13, 16]; // ignore "shift", "enter" and "tab" keys
+
+			if (ignoreKeys.indexOf(key) === -1 && input.value[0] === '/') {
+				var enteredText = input.value;
 				var data = enteredText.split(/\s+/);
 				var commandName = data.length > 0 ? data[0].substring(1) : '';
 
-				var possibleCommands = [];
-				Object.keys(commands).forEach(function(command) {
-					if (command.indexOf(commandName) === 0)
-						possibleCommands.push(command);
-				});
-
-				displayPopup(possibleCommands);
-
-				if (possibleCommands.length === 0 || key === 13)
+				if (data.length > 1) {
 					removePopup();
+				} else {
+					var possibleCommands = [];
+					Object.keys(commands).forEach(function(command) {
+						if (command.indexOf(commandName) >= 0)
+							possibleCommands.push(command);
+					});
 
-				if (key !== 13) // "Enter" key
-					return;
+					displayPopup(possibleCommands.sort());
 
-				// from here, the "keydown" must be a "Enter"
-				e.stopPropagation();
-
-				var additionalParameters = data.length > 1 ? data.slice(1) : [];
-				var tempCommand = findCommand(commandName);
-
-				if (tempCommand) {
-					tempCommand.execute(additionalParameters);
+					if (possibleCommands.length === 0)
+						removePopup();
 				}
-
-				clearInput();
-				e.preventDefault();
 			}
     }, true);
 
