@@ -122,50 +122,39 @@
     observer.observe(targetNode, observerConfig)
 
     window.addEventListener('keydown', e => {
-		var key = e.which || e.keyCode;
+			var key = e.which || e.keyCode;
 
-		if (input.value.indexOf('/') === 0){
+			if (input.value.indexOf('/') === 0){
+				var enteredText = input.value.trim();
+				var data = enteredText.split(/\s+/);
+				var commandName = data.length > 0 ? data[0].substring(1) : '';
 
-			var enteredText = input.value;
-			var data = enteredText.split(' ');
-			var commandName = data.length > 0 ? data[0].substring(1) : '';
+				var possibleCommands = [];
+				Object.keys(commands).forEach(function(command) {
+					if (command.indexOf(commandName) === 0)
+						possibleCommands.push(command);
+				});
 
-			var possibleCommands = [];
-			Object.keys(commands).forEach(function(command) {
-				if (command.indexOf(commandName) === 0)
-					possibleCommands.push(command);
-			});
+				displayPopup(possibleCommands);
 
-			displayPopup(possibleCommands);
+				if (possibleCommands.length === 0 || key === 13)
+					removePopup();
 
-			if (possibleCommands.length === 0)
-				removePopup();
-		}
+				if (key !== 13) // "Enter" key
+					return;
 
-		if (key !== 13)
-			return;
+				// from here, the "keydown" must be a "Enter"
+				e.stopPropagation();
 
-		removePopup();
+				var additionalParameters = data.length > 1 ? data.slice(1) : [];
+				var tempCommand = findCommand(commandName);
 
+				if (tempCommand) {
+					tempCommand.execute(additionalParameters);
+				}
 
-		if (input.value.indexOf('/') === 0){
-			e.stopPropagation();
-			var enteredText = input.value.trim();
-
-			var data = enteredText.split(/\s+/);
-
-			var commandName = data.length > 0 ? data[0].substring(1) : '';
-			var additionalParameters = data.length > 1 ? data.slice(1) : [];
-
-			var temp_command = findCommand(commandName);
-
-			if (temp_command) {
-				temp_command.execute(additionalParameters);
+				clearInput();
 			}
-
-			clearInput();
-
-		}
     }, true);
 
     //NEVER GONNA GIVE YOU UP
