@@ -154,6 +154,7 @@
 				}
 
 				clearInput();
+				e.preventDefault();
 			}
     }, true);
 
@@ -182,7 +183,7 @@
 
 	function shruggie(){
 		sendMessage('¯\\\\_(ツ)_/¯');
-	};
+	}
 
     function getNorris() {
         fetch(`https://jsonp.afeld.me/?url=http://api.icndb.com/jokes/random`)
