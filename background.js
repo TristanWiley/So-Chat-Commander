@@ -155,7 +155,7 @@
 			var data = enteredText.split(/\s+/);
 
 			var commandName = data.length > 0 ? data[0].substring(1) : '';
-			var additionalParameters = data.length > 1 ? data.slice(1, data.length) : [];
+			var additionalParameters = data.length > 1 ? data.slice(1) : [];
 
 			var temp_command = findCommand(commandName);
 
@@ -235,7 +235,7 @@
 
     function replyLast(parameters) {
         var username = parameters[0].replace(/\s/g, '');
-		var message = parameters.slice(1, parameters.length).join(' ');
+		var message = parameters.slice(1).join(' ');
         var signatures = document.getElementsByClassName('tiny-signature');
         for (var i = signatures.length-1; i > 0; --i) {
             var item = signatures[i];
