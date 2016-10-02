@@ -1,6 +1,7 @@
 (function() {
-	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
-	var command = function(name, callback){
+	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
+
+	var Command = function(name, callback){
 		this.name = name;
 		this.callback = callback;
 		this.execute = function(parameters) {
@@ -15,19 +16,19 @@
 	}
 
 	var commands = {
-		collapse: new command('collapse', collapseAll),
-		uncollapse: new command('uncollapse', unCollapseAll),
-		shruggie: new command('shruggie', shruggie),
-		norris: new command('norris', getNorris),
-		skeet: new command('skeet', getSkeet),
-		cat: new command('cat', getCat),
-		replyLast: new command('replyLast', replyLast),
-		giphy: new command('giphy', giphyStuff),
-		glink: new command('glink', giphyShorten),
-		ignore: new command('ignore', ignoreUsers),
-		coin: new command('coin', flipACoin),
-		dice: new command('dice', rollADice),
-		unignore: new command('unignore', unignoreUsers)
+		collapse: new Command('collapse', collapseAll),
+		uncollapse: new Command('uncollapse', unCollapseAll),
+		shruggie: new Command('shruggie', shruggie),
+		norris: new Command('norris', getNorris),
+		skeet: new Command('skeet', getSkeet),
+		cat: new Command('cat', getCat),
+		replyLast: new Command('replyLast', replyLast),
+		giphy: new Command('giphy', giphyStuff),
+		glink: new Command('glink', giphyShorten),
+		ignore: new Command('ignore', ignoreUsers),
+		coin: new Command('coin', flipACoin),
+		dice: new Command('dice', rollADice),
+		unignore: new Command('unignore', unignoreUsers)
 	};
 
 	function clearInput() {
