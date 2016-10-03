@@ -4,7 +4,7 @@
 1. Fork this repo.
 2. Make your changes.
 3. Push to your fork.
-4. Test your changes ([see this](#HowToTest)) and make sure to respect the [coding styles](#CodingStyles)
+4. Test your changes ([see this](#user-content-how-to-test)) and make sure to respect the [coding styles](#user-content-coding-styles)
 4. Before doing a *pull request*, make sure to be up to date with this repo (`git pull <ORIGINAL_REPO> master`)
 5. Do a pull request through **GitHub**.
 
