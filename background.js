@@ -1,6 +1,7 @@
 (function() {
-	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
-	var command = function(name, callback){
+	var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
+
+	var Command = function(name, callback){
 		this.name = name;
 		this.callback = callback;
 		this.execute = function(parameters) {
@@ -15,19 +16,19 @@
 	}
 
 	var commands = {
-		collapse: new command('collapse', collapseAll),
-		uncollapse: new command('uncollapse', unCollapseAll),
-		shruggie: new command('shruggie', shruggie),
-		norris: new command('norris', getNorris),
-		skeet: new command('skeet', getSkeet),
-		cat: new command('cat', getCat),
-		replyLast: new command('replyLast', replyLast),
-		giphy: new command('giphy', giphyStuff),
-		glink: new command('glink', giphyShorten),
-		ignore: new command('ignore', ignoreUsers),
-		coin: new command('coin', flipACoin),
-		dice: new command('dice', rollADice),
-		unignore: new command('unignore', unignoreUsers)
+		collapse: new Command('collapse', collapseAll),
+		uncollapse: new Command('uncollapse', unCollapseAll),
+		shruggie: new Command('shruggie', shruggie),
+		norris: new Command('norris', getNorris),
+		skeet: new Command('skeet', getSkeet),
+		cat: new Command('cat', getCat),
+		replyLast: new Command('replyLast', replyLast),
+		giphy: new Command('giphy', giphyStuff),
+		glink: new Command('glink', giphyShorten),
+		ignore: new Command('ignore', ignoreUsers),
+		coin: new Command('coin', flipACoin),
+		dice: new Command('dice', rollADice),
+		unignore: new Command('unignore', unignoreUsers)
 	};
 
 	function clearInput() {
@@ -121,40 +122,82 @@
     })
     observer.observe(targetNode, observerConfig)
 
-    window.addEventListener('keydown', e => {
+		window.addEventListener('keydown', e => {
 			var key = e.which || e.keyCode;
 
-			if (input.value.indexOf('/') === 0){
-				var enteredText = input.value.trim();
+			if (key === 9 && document.getElementById('commands-list')) { // "tab"
+				var allComands = document.getElementById('commands-list').querySelectorAll('span');
+				var currCommand = document.getElementById('commands-list').querySelector('.curr-command');
+				var direction = e.shiftKey ? 'previousSibling' : 'nextSibling';
+				var newCommand;
+
+				if (currCommand === null)
+					newCommand = allComands[0];
+				else if (currCommand[direction] === null)
+					newCommand = direction === 'nextSibling' ? allComands[0] : allComands[allComands.length - 1];
+				else
+					newCommand = currCommand[direction];
+
+				if (currCommand)
+					currCommand.className = '';
+
+				newCommand.className = 'curr-command';
+
+				e.preventDefault();
+			} else if (input.value[0] === '/' && key === 13) { // "Enter"
+				var currCommand = document.getElementById('commands-list') ?
+					document.getElementById('commands-list').querySelector('.curr-command') :
+					null;
+
+				if (currCommand) {
+					e.stopPropagation();
+
+					commandClicked.call(currCommand);
+				} else {
+					var enteredText = input.value.trim();
+					var data = enteredText.split(/\s+/);
+					var commandName = data.length > 0 ? data[0].substring(1) : '';
+
+					e.stopPropagation();
+
+					var additionalParameters = data.length > 1 ? data.slice(1) : [];
+					var tempCommand = findCommand(commandName);
+
+					if (tempCommand) {
+						tempCommand.execute(additionalParameters);
+					}
+
+					clearInput();
+				}
+
+				removePopup();
+				e.preventDefault();
+			}
+		}, true);
+
+    window.addEventListener('keyup', e => {
+			var key = e.which || e.keyCode;
+			var ignoreKeys = [9, 13, 16]; // ignore "shift", "enter" and "tab" keys
+
+			if (ignoreKeys.indexOf(key) === -1 && input.value[0] === '/') {
+				var enteredText = input.value;
 				var data = enteredText.split(/\s+/);
 				var commandName = data.length > 0 ? data[0].substring(1) : '';
 
-				var possibleCommands = [];
-				Object.keys(commands).forEach(function(command) {
-					if (command.indexOf(commandName) === 0)
-						possibleCommands.push(command);
-				});
-
-				displayPopup(possibleCommands);
-
-				if (possibleCommands.length === 0 || key === 13)
+				if (data.length > 1) {
 					removePopup();
+				} else {
+					var possibleCommands = [];
+					Object.keys(commands).forEach(function(command) {
+						if (command.indexOf(commandName) >= 0)
+							possibleCommands.push(command);
+					});
 
-				if (key !== 13) // "Enter" key
-					return;
+					displayPopup(possibleCommands.sort());
 
-				// from here, the "keydown" must be a "Enter"
-				e.stopPropagation();
-
-				var additionalParameters = data.length > 1 ? data.slice(1) : [];
-				var tempCommand = findCommand(commandName);
-
-				if (tempCommand) {
-					tempCommand.execute(additionalParameters);
+					if (possibleCommands.length === 0)
+						removePopup();
 				}
-
-				clearInput();
-				e.preventDefault();
 			}
     }, true);
 

@@ -7,7 +7,8 @@
   "content_scripts": [
     {
 		  "matches" : ["*://chat.stackoverflow.com/*","*://chat.stackexchange.com/*","*://chat.meta.stackexchange.com/*"],
-      "js":["background.js"]
+      "js":["background.js"],
+      "css" : ["style.css"]
     }
   ],
   "browser_action": {
