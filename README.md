@@ -9,7 +9,7 @@ So far, this commands are implemented
 - `/giphy <phrase/word>`
 - `/glink <phrase/word>`
 - `/shruggie`
-- `/replyLast <username> <message>` 
+- `/replyLast <username> <message>`
 - `/cat`
 - `/norris`
 - `/skeet`
@@ -39,3 +39,7 @@ So collapse and uncollapse are self-explanatory, they take any onebox chat messa
 `/coin` will flip a coin and output its value.
 
 `/dice` will roll a dice and output its value.
+
+## Wanna contribute?
+
+Take a look at [this Contribution guide](CONTRIBUTING.md) before!
