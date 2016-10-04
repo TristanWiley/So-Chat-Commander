@@ -1,8 +1,8 @@
 # So-Chat-Commander
-Chat Commander is a client side Chrome extension that integrates commands for your use on any Stackexchange Chat.  
+Chat Commander is a client side Chrome extension that integrates commands for use on any Stackexchange Chat.  
 
 ## Command list
-So far, this commands are implemented
+So far, these commands are implemented:
 
 - `/collapse`
 - `/uncollapse`
@@ -18,11 +18,13 @@ So far, this commands are implemented
 - `/ignore <usernames...> [minutes]`
 - `/unignore <usernames...>`
 
-So collapse and uncollapse are self-explanatory, they take any onebox chat message (Wikipedia, SO Question/Answer,  Youtube, Image, etc.) and collapse it.
+`/collapse` takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.
 
-`/giphy` will send a Gifs to the chat according to anything you send after it.
+`/uncollapse` takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and uncollapses it.
 
-`/glink` will send a link to gif according to anything you send after it.
+`/giphy` will send a GIF to the chat according to anything you send after it.
+
+`/glink` will send a link to a GIF according to anything you send after it.
 
 `/shruggie` will send a `¯\_(ツ)_/¯`.
 
