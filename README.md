@@ -15,8 +15,8 @@ So far, these commands are implemented:
 - `/skeet`
 - `/coin`
 - `/dice`
-- `/ignore <usernames...> [minutes]`
-- `/unignore <usernames...>`
+- `/ignore <@usernames> [minutes]` (Remember to prefix username with @)
+- `/unignore <@usernames...>` (Remember to prefix username with @)
 
 `/collapse` takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.
 

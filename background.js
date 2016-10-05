@@ -1,6 +1,5 @@
 (function() {
   var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
-
   var Command = function(name, callback) {
     this.name = name;
     this.callback = callback;
@@ -158,7 +157,6 @@
         var commandName = data.length > 0 ? data[0].substring(1) : '';
 
         e.stopPropagation();
-
         var additionalParameters = data.length > 1 ? data.slice(1) : [];
         var tempCommand = findCommand(commandName);
 
@@ -295,8 +293,9 @@
 
   function removeIgnoredUsers(node) {
     const el = node.querySelector("a .username")
+    let name = ""
     if (el) {
-      const name = el.innerHTML
+      name = normalizeName(el.innerHTML)
     }
     if (ignoreList.indexOf(name) != -1) {
       targetNode.removeChild(node)
@@ -309,17 +308,21 @@
     time = parseInt(time);
     parts.forEach((item) => {
       if (item.charAt(0) === "@") {
-        var name = item.slice(1)
-        displayMessage(`${name} is muted`)
-        ignoreList.push(name)
-        updateStore()
-        if (time != -1 && time > 0) {
-          setTimeout(() => {
-            ignoreList = ignoreList.filter(function(item) {
-              return item != name
-            })
-            updateStore()
-          }, time * 60000)
+        var name = normalizeName(item.slice(1))
+        if (ignoreList.indexOf(name) == -1) {
+          displayMessage(`${name} is muted`)
+          ignoreList.push(name)
+          updateStore()
+          if (time != -1 && time > 0) {
+            setTimeout(() => {
+              ignoreList = ignoreList.filter(function(item) {
+                return item != name
+              })
+              updateStore()
+            }, time * 60000)
+          }
+        } else {
+          displayMessage(`${name} is already muted`)
         }
       }
     })
@@ -348,7 +351,7 @@
     var parts = parameters
     parts.forEach(item => {
       if (item.charAt(0) === "@") {
-        const name = item.slice(1)
+        const name = normalizeName(item.slice(1))
         const oldLength = ignoreList.length
         ignoreList = ignoreList.filter(function(item) {
           return item != name
@@ -356,9 +359,15 @@
         updateStore()
         if (oldLength > ignoreList.length) {
           displayMessage(`${name} has been unmuted`)
+        } else {
+          displayMessage(`${name} is not muted`)
         }
       }
     })
+  }
+
+  function normalizeName(name) {
+    return name.split(" ").join("")
   }
 
   function updateStore() {
