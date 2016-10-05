@@ -24,10 +24,10 @@
     replyLast: new Command('replyLast', replyLast),
     giphy: new Command('giphy', giphyStuff),
     glink: new Command('glink', giphyShorten),
-    ignore: new Command('ignore', ignoreUsers),
+    ignore: new Command('ignore', ignoreUser),
     coin: new Command('coin', flipACoin),
     dice: new Command('dice', rollADice),
-    unignore: new Command('unignore', unignoreUsers)
+    unignore: new Command('unignore', unignoreUser)
   };
 
   function clearInput() {
@@ -302,30 +302,37 @@
     }
   }
 
-  function ignoreUsers(parameters) {
+  function ignoreUser(parameters) {
     var parts = parameters;
     var time = parts[parts.length - 1].match(/^\d+$/) ? parts[parts.length - 1] : -1;
+    var end = parts.length
     time = parseInt(time);
-    parts.forEach((item) => {
-      if (item.charAt(0) === "@") {
-        var name = normalizeName(item.slice(1))
-        if (ignoreList.indexOf(name) == -1) {
-          displayMessage(`${name} is muted`)
-          ignoreList.push(name)
+    if (time != -1) {
+      end = parts.length - 1
+    }
+    var name = parts.slice(0, end).join("")
+    if (name.charAt(0) == "@")
+      name = name.slice(1)
+    console.log(name)
+    console.log(ignoreList.indexOf(name))
+    if (ignoreList.indexOf(name) == -1) {
+      ignoreList.push(name)
+      updateStore()
+      if (time != -1 && time > 0) {
+        displayMessage(`${name} has been muted for ${time} minutes`)
+        setTimeout(() => {
+          ignoreList = ignoreList.filter(function(item) {
+            return item != name
+          })
+          displayMessage(`${name} has been unmuted`)
           updateStore()
-          if (time != -1 && time > 0) {
-            setTimeout(() => {
-              ignoreList = ignoreList.filter(function(item) {
-                return item != name
-              })
-              updateStore()
-            }, time * 60000)
-          }
-        } else {
-          displayMessage(`${name} is already muted`)
-        }
+        }, time * 60000)
+      } else {
+        displayMessage(`${name} has been muted`)
       }
-    })
+    } else {
+      displayMessage(`${name} is already muted`)
+    }
   }
 
   function flipACoin() {
@@ -341,29 +348,27 @@
   }
 
   function displayMessage(message) {
+    console.log("#displayMessage:  " + message)
     var messageNode = document.createElement("div")
-    messageNode.innerHTML = message
-    messageNode.attributes.class = "user-container"
+    messageNode.textContent = message
+    messageNode.classList.add("user-container")
     targetNode.appendChild(messageNode)
   }
 
-  function unignoreUsers(parameters) {
-    var parts = parameters
-    parts.forEach(item => {
-      if (item.charAt(0) === "@") {
-        const name = normalizeName(item.slice(1))
-        const oldLength = ignoreList.length
-        ignoreList = ignoreList.filter(function(item) {
-          return item != name
-        })
-        updateStore()
-        if (oldLength > ignoreList.length) {
-          displayMessage(`${name} has been unmuted`)
-        } else {
-          displayMessage(`${name} is not muted`)
-        }
-      }
+  function unignoreUser(parameters) {
+    var name = parameters.join("")
+    if (name.charAt(0) == "@")
+      name = name.slice(1)
+    const oldLength = ignoreList.length
+    ignoreList = ignoreList.filter(function(item) {
+      return item != name
     })
+    updateStore()
+    if (oldLength > ignoreList.length) {
+      displayMessage(`${name} has been unmuted`)
+    } else {
+      displayMessage(`${name} is not muted`)
+    }
   }
 
   function normalizeName(name) {
@@ -371,6 +376,7 @@
   }
 
   function updateStore() {
+    console.log(ignoreList)
     localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
   }
 
