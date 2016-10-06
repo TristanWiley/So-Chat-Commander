@@ -5,8 +5,8 @@
     this.callback = callback;
     this.execute = function(parameters) {
       this.callback(parameters);
-    }
-  }
+    };
+  };
 
   function findCommand(name) {
     return commands.hasOwnProperty(name) ?
@@ -58,8 +58,8 @@
 
   function displayPopup(possibleCommands) {
     var popup = document.getElementById('commands-list');
-    if (popup) {
 
+    if (popup) {
       while (popup.firstChild) {
         popup.removeChild(popup.firstChild);
       }
@@ -71,11 +71,10 @@
         tempCommand.onclick = commandClicked;
         popup.appendChild(tempCommand);
       }
-
     } else {
       var element = document.createElement("div");
-      element.id = "commands-popup";
 
+      element.id = "commands-popup";
       element.className = "popup";
       element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
 
@@ -107,18 +106,18 @@
     }
   }
 
-  var targetNode = document.querySelector("#main #chat")
+  var targetNode = document.querySelector("#main #chat");
   const observerConfig = {
     childList: true
-  }
+  };
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       mutation.addedNodes.forEach(function(node) {
         removeIgnoredUsers(node)
-      })
-    })
-  })
-  observer.observe(targetNode, observerConfig)
+      });
+    });
+  });
+  observer.observe(targetNode, observerConfig);
 
   window.addEventListener('keydown', e => {
     var key = e.which || e.keyCode;
@@ -245,6 +244,7 @@
 
   function giphyStuff(parameters) {
     var searchText = encodeURI(parameters.join(' '));
+
     fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
       .then(response => response.json())
       .then(json => {
@@ -255,6 +255,7 @@
 
   function giphyShorten(parameters) {
     var searchText = encodeURI(parameters.join(' '));
+
     fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
       .then(response => response.json())
       .then(json => {
@@ -267,15 +268,19 @@
     var username = parameters[0].replace(/\s/g, '');
     var message = parameters.slice(1).join(' ');
     var signatures = document.getElementsByClassName('tiny-signature');
+
     for (var i = signatures.length - 1; i > 0; --i) {
       var item = signatures[i];
       var itemusername = item.getElementsByClassName('username')[0].innerHTML.replace(/\s/g, '');
+
       if (username == itemusername) {
         var parent = item.parentNode.parentNode;
         var elements = parent.getElementsByClassName('messages')[0].getElementsByClassName('message');
         var id = elements[elements.length - 1].id.replace('message-', '');
         var send = ":" + id + " " + message;
+
         sendMessage(send);
+
         break;
       }
     }
@@ -292,46 +297,49 @@
   }
 
   function removeIgnoredUsers(node) {
-    const el = node.querySelector("a .username")
-    let name = ""
+    const el = node.querySelector("a .username");
+    let name = "";
+
     if (el) {
-      name = normalizeName(el.innerHTML)
+      name = normalizeName(el.innerHTML);
     }
     if (ignoreList.indexOf(name) != -1) {
-      targetNode.removeChild(node)
+      targetNode.removeChild(node);
     }
   }
 
   function ignoreUser(parameters) {
     var parts = parameters;
-    var time = parts[parts.length - 1].match(/^\d+$/) ? parts[parts.length - 1] : -1;
-    var end = parts.length
-    time = parseInt(time);
+    var time = parts[parts.length - 1].match(/^\d+$/) ? parseInt(parts[parts.length - 1]) : -1;
+    var end = parts.length;
+
     if (time != -1) {
-      end = parts.length - 1
+      end = parts.length - 1;
     }
-    var name = parts.slice(0, end).join("")
+
+    var name = parts.slice(0, end).join("");
+
     if (name.charAt(0) == "@")
-      name = name.slice(1)
-    console.log(name)
-    console.log(ignoreList.indexOf(name))
+      name = name.slice(1);
+
     if (ignoreList.indexOf(name) == -1) {
-      ignoreList.push(name)
-      updateStore()
+      ignoreList.push(name);
+      updateStore();
+
       if (time != -1 && time > 0) {
-        displayMessage(`${name} has been muted for ${time} minutes`)
+        displayMessage(`${name} has been muted for ${time} minutes`);
         setTimeout(() => {
           ignoreList = ignoreList.filter(function(item) {
             return item != name
-          })
-          displayMessage(`${name} has been unmuted`)
-          updateStore()
-        }, time * 60000)
+          });
+          displayMessage(`${name} has been unmuted`);
+          updateStore();
+        }, time * 60000);
       } else {
-        displayMessage(`${name} has been muted`)
+        displayMessage(`${name} has been muted`);
       }
     } else {
-      displayMessage(`${name} is already muted`)
+      displayMessage(`${name} is already muted`);
     }
   }
 
@@ -348,36 +356,39 @@
   }
 
   function displayMessage(message) {
-    console.log("#displayMessage:  " + message)
-    var messageNode = document.createElement("div")
-    messageNode.textContent = message
-    messageNode.classList.add("user-container")
-    targetNode.appendChild(messageNode)
+    console.log("#displayMessage:  " + message);
+    var messageNode = document.createElement("div");
+    messageNode.textContent = message;
+    messageNode.classList.add("user-container");
+    targetNode.appendChild(messageNode);
   }
 
   function unignoreUser(parameters) {
-    var name = parameters.join("")
+    var name = parameters.join("");
+
     if (name.charAt(0) == "@")
-      name = name.slice(1)
-    const oldLength = ignoreList.length
+      name = name.slice(1);
+
+    const oldLength = ignoreList.length;
     ignoreList = ignoreList.filter(function(item) {
-      return item != name
+      return item != name;
     })
-    updateStore()
+    updateStore();
+
     if (oldLength > ignoreList.length) {
-      displayMessage(`${name} has been unmuted`)
+      displayMessage(`${name} has been unmuted`);
     } else {
-      displayMessage(`${name} is not muted`)
+      displayMessage(`${name} is not muted`);
     }
   }
 
   function normalizeName(name) {
-    return name.split(" ").join("")
+    return name.split(" ").join("");
   }
 
   function updateStore() {
-    console.log(ignoreList)
-    localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
+    console.log(ignoreList);
+    localStorage.setItem("ignoreList", JSON.stringify(ignoreList));
   }
 
   function flipACoin() {

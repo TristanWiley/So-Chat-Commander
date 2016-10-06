@@ -14,9 +14,10 @@ When pushing to your fork, make sure to commit as tight around a single goal. If
 When creating your PR, explain in details what your goal is. You can explain your thought process, reference existing issues, include a video or GIF to demonstrate, etc.
 
 ## How to test?
-In order to test your changes, go into `chrome://extensions`, load your local package, and head to `https://chat.stackoverflow.com/rooms/1`. This page is a sandbox made to test, so don't worry about spamming.
+In order to test your changes, go into `chrome://extensions`, load your local package, and head [here](https://chat.stackoverflow.com/rooms/1). This page is a sandbox made to test, so don't worry about spamming.
 
 ## Coding styles
 * Indentation: 2 spaces
+* End lines with a semi-colon
 
 **Feel free to add more if necessary**
