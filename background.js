@@ -254,13 +254,20 @@
   }
 
   function giphyShorten(parameters) {
+    var linkText = ""
+    for (var i = 0; i < parameters.length - 1; i++) {
+        if (parameters[i] == "--name") {
+            linkText = parameters[i+1]
+            parameters.splice(i, 2)
+        }
+    }
     var searchText = encodeURI(parameters.join(' '));
 
     fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
       .then(response => response.json())
       .then(json => {
         const url = json.data[0].images.fixed_height.url;
-        sendLink(parameters.join(' '), url);
+        sendLink(linkText || parameters.join(' '), url);
       });
   }
 
