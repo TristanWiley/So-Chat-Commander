@@ -7,7 +7,7 @@ So far, these commands are implemented:
 - `/collapse`
 - `/uncollapse`
 - `/giphy <phrase/word>`
-- `/glink <phrase/word>`
+- `/glink <phrase/word> --name [linkText]`
 - `/shruggie`
 - `/replyLast <username> <message>`
 - `/cat`
