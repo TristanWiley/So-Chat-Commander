@@ -4,9 +4,10 @@
   "name": "SO Chat Commander",
   "description": "This extension acts as an aide for StackExchange Chat users and provides different local commands to help you!",
   "version": "1.4",
+  "options_page": "options.html",
   "content_scripts": [
     {
-		  "matches" : ["*://chat.stackoverflow.com/*","*://chat.stackexchange.com/*","*://chat.meta.stackexchange.com/*"],
+      "matches" : ["*://chat.stackoverflow.com/*","*://chat.stackexchange.com/*","*://chat.meta.stackexchange.com/*"],
       "js":["background.js"],
       "css" : ["style.css"]
     }

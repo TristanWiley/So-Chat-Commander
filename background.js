@@ -3,9 +3,14 @@
   var Command = function(name, callback) {
     this.name = name;
     this.callback = callback;
+	this.isEnabled = true;
     this.execute = function(parameters) {
-      this.callback(parameters);
+      if (this.isEnabled)
+        this.callback(parameters);
     };
+	this.setEnabled = function(value){
+		this.isEnabled = value;
+	}
   };
 
   function findCommand(name) {
@@ -13,7 +18,10 @@
       commands[name] :
       undefined;
   }
-
+  
+  var displayPop = true;
+  var pluginEnabled = true;
+  
   var commands = {
     collapse: new Command('collapse', collapseAll),
     uncollapse: new Command('uncollapse', unCollapseAll),
@@ -29,6 +37,21 @@
     dice: new Command('dice', rollADice),
     unignore: new Command('unignore', unignoreUser)
   };
+  
+  chrome.storage.sync.get({
+	commands: [],
+	pluginEnabled: true,
+	displayPopup: true,
+  }, function(items) {
+	  for (var i = 0; i < items.commands.length; i++){
+		  var tempCommand = findCommand(items.commands[i].name);
+		  if (tempCommand) {
+			  tempCommand.setEnabled(items.commands[i].isEnabled);
+		  }
+	  }
+	  displayPop = items.displayPopup;
+	  pluginEnabled = items.pluginEnabled;
+  });
 
   function clearInput() {
     input.value = '';
@@ -57,53 +80,56 @@
   }
 
   function displayPopup(possibleCommands) {
-    var popup = document.getElementById('commands-list');
+    if (displayPop) {
 
-    if (popup) {
-      while (popup.firstChild) {
-        popup.removeChild(popup.firstChild);
+      var popup = document.getElementById('commands-list');
+
+      if (popup) {
+        while (popup.firstChild) {
+          popup.removeChild(popup.firstChild);
+        }
+
+        for (var i = 0; i < possibleCommands.length; i++) {
+          var tempCommand = document.createElement('span');
+          tempCommand.style = 'margin: 4px; cursor: pointer;';
+          tempCommand.innerHTML = possibleCommands[i];
+          tempCommand.onclick = commandClicked;
+          popup.appendChild(tempCommand);
+        }
+      } else {
+        var element = document.createElement("div");
+
+        element.id = "commands-popup";
+        element.className = "popup";
+        element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
+
+        var inputArea = document.getElementById('input-area');
+
+        var closeButton = document.createElement('div');
+        closeButton.className = 'btn-close';
+        closeButton.id = 'close-commands-popup';
+        closeButton.innerHTML = 'X';
+
+        closeButton.onclick = removePopup;
+
+        var commandsList = document.createElement('div');
+        commandsList.className = 'commands-list';
+        commandsList.id = 'commands-list';
+
+        for (var i = 0; i < possibleCommands.length; i++) {
+          var tempCommand = document.createElement('span');
+          tempCommand.style = 'margin: 4px;';
+          tempCommand.innerHTML = possibleCommands[i];
+          tempCommand.onclick = commandClicked;
+          commandsList.appendChild(tempCommand);
+        }
+
+        element.appendChild(closeButton);
+        element.appendChild(commandsList);
+
+        inputArea.appendChild(element);
       }
-
-      for (var i = 0; i < possibleCommands.length; i++) {
-        var tempCommand = document.createElement('span');
-        tempCommand.style = 'margin: 4px; cursor: pointer;';
-        tempCommand.innerHTML = possibleCommands[i];
-        tempCommand.onclick = commandClicked;
-        popup.appendChild(tempCommand);
-      }
-    } else {
-      var element = document.createElement("div");
-
-      element.id = "commands-popup";
-      element.className = "popup";
-      element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
-
-      var inputArea = document.getElementById('input-area');
-
-      var closeButton = document.createElement('div');
-      closeButton.className = 'btn-close';
-      closeButton.id = 'close-commands-popup';
-      closeButton.innerHTML = 'X';
-
-      closeButton.onclick = removePopup;
-
-      var commandsList = document.createElement('div');
-      commandsList.className = 'commands-list';
-      commandsList.id = 'commands-list';
-
-      for (var i = 0; i < possibleCommands.length; i++) {
-        var tempCommand = document.createElement('span');
-        tempCommand.style = 'margin: 4px;';
-        tempCommand.innerHTML = possibleCommands[i];
-        tempCommand.onclick = commandClicked;
-        commandsList.appendChild(tempCommand);
-      }
-
-      element.appendChild(closeButton);
-      element.appendChild(commandsList);
-
-      inputArea.appendChild(element);
-    }
+	}
   }
 
   var targetNode = document.querySelector("#main #chat");
@@ -120,6 +146,9 @@
   observer.observe(targetNode, observerConfig);
 
   window.addEventListener('keydown', e => {
+    if (!pluginEnabled)
+      return;
+
     var key = e.which || e.keyCode;
 
     if (key === 9 && document.getElementById('commands-list')) { // "tab"
@@ -172,6 +201,9 @@
   }, true);
 
   window.addEventListener('keyup', e => {
+    if (!pluginEnabled)
+      return;
+
     var key = e.which || e.keyCode;
     var ignoreKeys = [9, 13, 16]; // ignore "shift", "enter" and "tab" keys
 
