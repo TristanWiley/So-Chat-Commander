@@ -196,6 +196,50 @@
       }
     }
   }, true);
+  
+  function embedAllYoutube() { 
+    var youtube_ele = document.getElementsByClassName('ob-youtube');
+    
+    if (typeof youtube_ele !== 'undefined'){
+      for (var i = 0; i < youtube_ele.length; ++i) {
+        var link_ele = youtube_ele[i].getElementsByTagName('a');
+        
+        if (typeof link_ele !== 'undefined'){
+            var url = link_ele[0].getAttribute('href');
+            
+            var video_id ='';
+            if (url.indexOf('youtu.be') !== -1){ //if shorten
+              var url_parts = url.split('/');
+              video_id = url_parts[url_parts.length -1];
+              
+            } else {
+              var queryString = url.split('?')[1];
+              var vars = queryString.split('&');
+              var params = [];
+              
+              for (var k = 0; k < vars.length; ++k) {
+                var pair = vars[k].split('=');
+                params[pair[0]] = pair[1];
+              }
+              
+              video_id = params['v'];
+            }
+            
+            var embed_src = 'https://www.youtube.com/embed/' + video_id;
+            var img_ele = link_ele[0].getElementsByTagName('img')[0]; 
+            
+            var embed_ele = document.createElement('iframe');
+            embed_ele.setAttribute('src', embed_src);
+            embed_ele.width = img_ele.width;
+            embed_ele.height = img_ele.height;
+            
+            youtube_ele[i].innerHTML = '';
+            youtube_ele[i].appendChild(embed_ele);
+        }
+      }
+    }
+  }
+  
 
   //NEVER GONNA GIVE YOU UP
   //NEVER GONNA LET YOU DOWN
