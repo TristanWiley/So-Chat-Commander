@@ -34,7 +34,13 @@ var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikip
     new Command('ignore', 'will not display messages from certain user for certain amount of time.', true),
     new Command('coin', 'will flip a coin and output its value.', true),
     new Command('dice', 'will roll a dice and output its value.', true),
-    new Command('unignore', 'will unignore user and start displaying his messages again.', true)];
+    new Command('unignore', 'will unignore user and start displaying his messages again.', true),
+	new Command('star', 'will star last message.'),
+    new Command('time', 'will display current time.'),
+    new Command('sound', 'will play sound on local computer.'),
+    new Command('xkcd', 'will display last / random XKCD comic.'),
+    new Command('reddit', 'will send link to newest / hottest / top post in subreddit.')
+	];
 
 function saveCommands(){
   chrome.storage.sync.set({
