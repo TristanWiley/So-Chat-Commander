@@ -17,6 +17,11 @@ So far, these commands are implemented:
 - `/dice`
 - `/ignore <username> [minutes]` (Prefixing username with @ is supported)
 - `/unignore <username>` (Prefixing username with @ is supported)
+- `/star`
+- `/time`
+- `/sound`
+- `/xkcd ['random'/number]`
+- `/reddit <subreddit> [new/top/hot]`
 
 `/collapse` takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.
 
@@ -41,6 +46,16 @@ So far, these commands are implemented:
 `/coin` will flip a coin and output its value.
 
 `/dice` will roll a dice and output its value.
+
+`/star` will star the last message.
+
+`/time` will output current time.
+
+`/sound` will play notification sound on local computer.
+
+`/xkcd` will display latest XKCD comic (if there are no arguments `/xkcd`), random comic (if there is only 1 parameter - word 'random' `/xkcd random`) or specified comic (if there is only 1 parameter - number of comic `/xkcd 23`).
+
+`/reddit` will display link to random subreddit (if there are no arguments `/reddit`), link to subreddit (if there is only subreddit name `/reddit history`) or display link to top / new / hot post (`/reddit history new` or `/reddit history hot` or `/reddit history top`).
 
 ## Wanna contribute?
 
