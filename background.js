@@ -40,7 +40,9 @@
     time: new Command('time', time),
     sound: new Command('sound', playSound),
     xkcd: new Command('xkcd', getXKCD),
-    reddit: new Command('reddit', reddit)
+    reddit: new Command('reddit', reddit),
+    youtubeEmbed: new Command('youtubeEmbed', youtubeEmbedAll),
+    youtubeLink: new Command('youtubeLink', youtubeLinkAll)
   };
   
   chrome.storage.sync.get({
