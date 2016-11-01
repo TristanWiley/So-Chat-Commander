@@ -27,7 +27,9 @@
     ignore: new Command('ignore', ignoreUser),
     coin: new Command('coin', flipACoin),
     dice: new Command('dice', rollADice),
-    unignore: new Command('unignore', unignoreUser)
+    unignore: new Command('unignore', unignoreUser),
+		youtubeEmbed: new Command('youtubeEmbed', youtubeEmbedAll),
+		youtubeLink: new Command('youtubeLink', youtubeLinkAll)
   };
 
   function clearInput() {
@@ -196,50 +198,6 @@
       }
     }
   }, true);
-  
-  function embedAllYoutube() { 
-    var youtube_ele = document.getElementsByClassName('ob-youtube');
-    
-    if (typeof youtube_ele !== 'undefined'){
-      for (var i = 0; i < youtube_ele.length; ++i) {
-        var link_ele = youtube_ele[i].getElementsByTagName('a');
-        
-        if (typeof link_ele !== 'undefined'){
-            var url = link_ele[0].getAttribute('href');
-            
-            var video_id ='';
-            if (url.indexOf('youtu.be') !== -1){ //if shorten
-              var url_parts = url.split('/');
-              video_id = url_parts[url_parts.length -1];
-              
-            } else {
-              var queryString = url.split('?')[1];
-              var vars = queryString.split('&');
-              var params = [];
-              
-              for (var k = 0; k < vars.length; ++k) {
-                var pair = vars[k].split('=');
-                params[pair[0]] = pair[1];
-              }
-              
-              video_id = params['v'];
-            }
-            
-            var embed_src = 'https://www.youtube.com/embed/' + video_id;
-            var img_ele = link_ele[0].getElementsByTagName('img')[0]; 
-            
-            var embed_ele = document.createElement('iframe');
-            embed_ele.setAttribute('src', embed_src);
-            embed_ele.width = img_ele.width;
-            embed_ele.height = img_ele.height;
-            
-            youtube_ele[i].innerHTML = '';
-            youtube_ele[i].appendChild(embed_ele);
-        }
-      }
-    }
-  }
-  
 
   //NEVER GONNA GIVE YOU UP
   //NEVER GONNA LET YOU DOWN
@@ -453,5 +411,169 @@
   function rollADice() {
     sendMessage("I rolled a die and it was a " + Math.floor(Math.random() * 6 + 1));
   }
+	
 
+	var messages = new Array();
+	
+	function youtubeEmbedAll(){
+		var youtube_ele = document.getElementsByClassName('ob-youtube');
+		if (typeof youtube_ele !== 'undefined'){
+      for (var i = 0; i < youtube_ele.length; ++i) {
+				messages.push(new message(youtube_ele[i].parentElement.parentElement));
+			}
+		}
+		for (var i = 0; i < messages.length; ++i) {
+			messages[i].setEmbed();
+		}
+	}
+	
+	function youtubeLinkAll(){
+		for (var i = 0; i < messages.length; ++i) {
+			messages[i].setLink();
+		}
+	}
+	
+	
+	
+	
+	
+	/* 
+	 *	This object store a message content and allow some manipulation on the DOM
+	 *
+	 *  DOMobject = The object with class set to "message". usualy a child of "messages"
+	 */
+	function message(DOMobject){
+			
+		/* --- Parsing --- */
+		
+		/*
+		 * Get object's child with class set to "content"
+		 */
+		this.getContent = function (){
+			return self.object.getElementsByClassName('content')[0];
+		}
+		
+		/*
+		 * Return true if content contain a youtube video
+		 */
+		this.hasYoutube = function (){
+			try { 
+				return typeof self.content.getElementsByClassName('ob-youtube') !== 'undefined';
+				} catch (exeption){}
+		}
+		
+		/*
+		 * Parse message content to get all youtbe properties
+		 */
+		this.getYoutube = function (){  
+			try { 
+				this.data.object = self.content.getElementsByClassName('ob-youtube')[0]; // get youtube container
+			} catch (exeption){}
+			
+			try { 
+				this.data.link = this.data.object.getElementsByTagName('a')[0]; // get link object
+			} catch (exeption){}
+			
+			try { 
+				this.data.img = this.data.link.getElementsByTagName('img')[0]; // get img object
+			} catch (exeption){}
+			
+			try { 
+				this.data.iframe = this.data.object.getElementsByTagName('iframe')[0]; // get iframe object
+			} catch (exeption){}
+			
+			try { 
+				this.data.url = '';
+				if (this.data.iframe !== 'undefined' ){ // if there is an iframe, get it's source value
+					this.data.url = this.data.iframe.getAttribute('src'); 
+				} else if (this.data.link !== 'undefined' ){ // if there is an link, get it's hypertext value
+					this.data.url = this.data.link.getAttribute('href'); 
+				}
+			} catch (exeption){}
+			
+			
+			// Parse url to get the Video ID
+			try { 
+				this.data.videoId = '';
+				
+				if (this.data.url.indexOf('youtu.be') !== -1 || this.data.url.indexOf('youtu.be') !== -1){ //if shorten or embed the ID is the filename
+					var url_parts = this.data.url.split('/');
+					this.data.videoId = url_parts[url_parts.length -1];
+				} else { //in other case the Id is the value of argument "v"
+					var queryString = this.data.url.split('?')[1];
+					var vars = queryString.split('&');
+					var params = [];
+					
+					for (var k = 0; k < vars.length; ++k) {
+						var pair = vars[k].split('=');
+						params[pair[0]] = pair[1];
+					}
+					
+					this.data.videoId = params['v'];
+				}
+			} catch (exeption){}
+			
+			// Return parsed data
+			return this.data;
+		}
+			
+		/* --- Remodeling --- */
+			
+		/*
+		 * Rearange data to create a embedded video
+		 */
+		this.getEmbed = function() { 
+			if (self.youtube.videoId = null) return null;
+			if (self.youtube.img = null) return null;
+			
+			var src = 'https://www.youtube.com/embed/' + self.youtube.videoId;
+			
+			var object = document.createElement('iframe');
+			object.setAttribute('src', embed_src);
+			object.width = self.youtube.img.width;
+			object.height = self.youtube.img.height;
+			
+			return object;
+		}
+			
+		/*
+		 * recover data for linked video
+		 */
+		this.getLink = function() { 
+			if (self.youtube.link = null) return null;
+			
+			return self.youtube.link;
+		}
+		
+		/* --- Replace --- */
+		
+		/*
+		 * Replace old message content by the new generated
+		 */
+		this.setEmbed = function() {
+			if(self.embedded == null) return null;
+			self.content = self.embedded;
+		}
+		
+		/*
+		 * Replace new message content by the old one
+		 */
+		this.setLink = function() {
+			if(self.linked == null) return null;
+			self.content = self.linked;
+		}
+		
+		
+		
+		
+		self = this;
+		this.object = DOMobject;
+		this.content = this.getContent();
+		if (!this.hasYoutube()) return null;
+		this.youtube = this.getYoutube();
+		this.embedded = this.getEmbed();
+		this.linked = this.getLink();
+		
+	}
+	
 })();
