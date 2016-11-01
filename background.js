@@ -138,18 +138,19 @@
   }
 
   var targetNode = document.querySelector("#main #chat");
+  Array.from(targetNode.querySelectorAll('.user-container .message')).forEach(parseForYouTube);
   const observerConfig = {
     childList: true
   };
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       mutation.addedNodes.forEach(function(node) {
-        removeIgnoredUsers(node)
+        removeIgnoredUsers(node);
+	parseForYouTube(node);
       });
     });
   });
   observer.observe(targetNode, observerConfig);
-
   window.addEventListener('keydown', e => {
     if (!pluginEnabled)
       return;
@@ -580,5 +581,23 @@
       }
     }
   }
-
+  function parseForYouTube(node) {
+    if( !node.classList || !node.classList.contains('message') || node.classList.contains('pending') ) return; 
+    const yt = node.querySelector('.onebox.ob-youtube');
+    if( !yt ) return;
+    const link = yt.querySelector('a'); 
+    let videoHref;
+    if( /(youtu\.?be)\/.+$/.test(link.href) ) { 
+        videoHref = link.href.split('/').pop();
+    } else {
+        videoHref = link.href.match(/v\=(.*)&?/).pop().replace(/&/, '/?'); 
+    } 
+    const vid = document.createElement('iframe');
+    vid.setAttribute('height', 240);
+    vid.setAttribute('width', 320);
+    vid.setAttribute('frameborder', 0);
+    vid.setAttribute('allowfullscreen', 'true');
+    vid.src = '//youtube.com/embed/' + videoHref;
+    yt.parentNode.replaceChild(vid, yt);
+  }
 })();
