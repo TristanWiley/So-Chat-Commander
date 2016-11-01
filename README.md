@@ -60,3 +60,6 @@ So far, these commands are implemented:
 ## Wanna contribute?
 
 Take a look at [this Contribution guide](CONTRIBUTING.md) before!
+
+## Thank You To...
+Huge thank you to all the contributers! Especially @drobilc and @jonathangb who have done so much!
