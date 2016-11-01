@@ -61,5 +61,7 @@ So far, these commands are implemented:
 
 Take a look at [this Contribution guide](CONTRIBUTING.md) before!
 
+Make sure to add your command to the Readme when contributing.
+
 ## Thank You To...
 Huge thank you to all the contributers! Especially @drobilc and @jonathangb who have done so much!
