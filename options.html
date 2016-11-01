@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>SO Chat Commander Options</title>
+		<style>
+			.group h2 {
+				clear: both;
+				font-size: 32px;
+				font-weight: 400;
+				margin: 0;
+			}
+			ul {
+				list-style-type: none;
+				padding: 0;
+			}
+			li {
+				font-size: 20px;
+				line-height: 30px;
+			}
+			input[type="checkbox"] {
+				margin-right: 20px;
+			}
+			#content {
+				margin: 0 auto;
+				width: 800px;
+			}
+			.group {
+				margin-bottom: 10px;
+				padding: 10px;
+				box-sizing: borde-box;
+			}
+			#github-logo {
+				width: 32px;
+				float: right;
+				margin: 10px;
+			}
+			#header h1 {
+				float: left;
+				margin: 0;
+				line-height: 30px;
+				padding: 10px;
+				font-size: 30px;
+				margin-bottom: 20px;
+			}
+			.command-name {
+				padding-top: 0.2em;
+				padding-bottom: 0.2em;
+				border-radius: 3px;
+				background: #f5f5f5;
+				font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+				margin-right: 10px;
+			}
+		</style>
+		<link rel="icon" href="icon.png">
+	</head>
+	<body>
+		<div id="content">
+			<div id="header">
+				<h1>Stack Overflow Chat Commander</h1>
+				<a href="https://github.com/TristanWiley/So-Chat-Commander"><img src="GitHub-Mark-64px.png" id="github-logo"/></a>
+			</div>
+			<div class="group">
+				<h2>General options</h2>
+				<ul id="options">
+					<li><input type="checkbox" id="pluginEnabled"> Plugin enabled</li>
+					<li><input type="checkbox" id="displayPopup"> Display popup with commands</li>
+				</ul>
+			</div>
+			
+			<div class="group">
+				<h2>Enable / disable commands</h2>
+				
+				<ul id="command-list">
+				</ul>
+			
+			</div>
+			<div class="group">
+			</div>
+		</div>
+		
+		<script src="options.js"></script>
+	</body>
+</html>

@@ -3,9 +3,14 @@
   var Command = function(name, callback) {
     this.name = name;
     this.callback = callback;
+	this.isEnabled = true;
     this.execute = function(parameters) {
-      this.callback(parameters);
+      if (this.isEnabled)
+        this.callback(parameters);
     };
+	this.setEnabled = function(value){
+		this.isEnabled = value;
+	}
   };
 
   function findCommand(name) {
@@ -13,7 +18,10 @@
       commands[name] :
       undefined;
   }
-
+  
+  var displayPop = true;
+  var pluginEnabled = true;
+  
   var commands = {
     collapse: new Command('collapse', collapseAll),
     uncollapse: new Command('uncollapse', unCollapseAll),
@@ -28,9 +36,27 @@
     coin: new Command('coin', flipACoin),
     dice: new Command('dice', rollADice),
     unignore: new Command('unignore', unignoreUser),
-		youtubeEmbed: new Command('youtubeEmbed', youtubeEmbedAll),
-		youtubeLink: new Command('youtubeLink', youtubeLinkAll)
+    star: new Command('star', starLast),
+    time: new Command('time', time),
+    sound: new Command('sound', playSound),
+    xkcd: new Command('xkcd', getXKCD),
+    reddit: new Command('reddit', reddit)
   };
+  
+  chrome.storage.sync.get({
+	commands: [],
+	pluginEnabled: true,
+	displayPopup: true,
+  }, function(items) {
+	  for (var i = 0; i < items.commands.length; i++){
+		  var tempCommand = findCommand(items.commands[i].name);
+		  if (tempCommand) {
+			  tempCommand.setEnabled(items.commands[i].isEnabled);
+		  }
+	  }
+	  displayPop = items.displayPopup;
+	  pluginEnabled = items.pluginEnabled;
+  });
 
   function clearInput() {
     input.value = '';
@@ -59,53 +85,56 @@
   }
 
   function displayPopup(possibleCommands) {
-    var popup = document.getElementById('commands-list');
+    if (displayPop) {
 
-    if (popup) {
-      while (popup.firstChild) {
-        popup.removeChild(popup.firstChild);
+      var popup = document.getElementById('commands-list');
+
+      if (popup) {
+        while (popup.firstChild) {
+          popup.removeChild(popup.firstChild);
+        }
+
+        for (var i = 0; i < possibleCommands.length; i++) {
+          var tempCommand = document.createElement('span');
+          tempCommand.style = 'margin: 4px; cursor: pointer;';
+          tempCommand.innerHTML = possibleCommands[i];
+          tempCommand.onclick = commandClicked;
+          popup.appendChild(tempCommand);
+        }
+      } else {
+        var element = document.createElement("div");
+
+        element.id = "commands-popup";
+        element.className = "popup";
+        element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
+
+        var inputArea = document.getElementById('input-area');
+
+        var closeButton = document.createElement('div');
+        closeButton.className = 'btn-close';
+        closeButton.id = 'close-commands-popup';
+        closeButton.innerHTML = 'X';
+
+        closeButton.onclick = removePopup;
+
+        var commandsList = document.createElement('div');
+        commandsList.className = 'commands-list';
+        commandsList.id = 'commands-list';
+
+        for (var i = 0; i < possibleCommands.length; i++) {
+          var tempCommand = document.createElement('span');
+          tempCommand.style = 'margin: 4px;';
+          tempCommand.innerHTML = possibleCommands[i];
+          tempCommand.onclick = commandClicked;
+          commandsList.appendChild(tempCommand);
+        }
+
+        element.appendChild(closeButton);
+        element.appendChild(commandsList);
+
+        inputArea.appendChild(element);
       }
-
-      for (var i = 0; i < possibleCommands.length; i++) {
-        var tempCommand = document.createElement('span');
-        tempCommand.style = 'margin: 4px; cursor: pointer;';
-        tempCommand.innerHTML = possibleCommands[i];
-        tempCommand.onclick = commandClicked;
-        popup.appendChild(tempCommand);
-      }
-    } else {
-      var element = document.createElement("div");
-
-      element.id = "commands-popup";
-      element.className = "popup";
-      element.style = "position: absolute; left: 0; top: 0; margin-top: -35px; width: 600px;";
-
-      var inputArea = document.getElementById('input-area');
-
-      var closeButton = document.createElement('div');
-      closeButton.className = 'btn-close';
-      closeButton.id = 'close-commands-popup';
-      closeButton.innerHTML = 'X';
-
-      closeButton.onclick = removePopup;
-
-      var commandsList = document.createElement('div');
-      commandsList.className = 'commands-list';
-      commandsList.id = 'commands-list';
-
-      for (var i = 0; i < possibleCommands.length; i++) {
-        var tempCommand = document.createElement('span');
-        tempCommand.style = 'margin: 4px;';
-        tempCommand.innerHTML = possibleCommands[i];
-        tempCommand.onclick = commandClicked;
-        commandsList.appendChild(tempCommand);
-      }
-
-      element.appendChild(closeButton);
-      element.appendChild(commandsList);
-
-      inputArea.appendChild(element);
-    }
+	}
   }
 
   var targetNode = document.querySelector("#main #chat");
@@ -122,6 +151,9 @@
   observer.observe(targetNode, observerConfig);
 
   window.addEventListener('keydown', e => {
+    if (!pluginEnabled)
+      return;
+
     var key = e.which || e.keyCode;
 
     if (key === 9 && document.getElementById('commands-list')) { // "tab"
@@ -174,6 +206,9 @@
   }, true);
 
   window.addEventListener('keyup', e => {
+    if (!pluginEnabled)
+      return;
+
     var key = e.which || e.keyCode;
     var ignoreKeys = [9, 13, 16]; // ignore "shift", "enter" and "tab" keys
 
@@ -411,13 +446,146 @@
   function rollADice() {
     sendMessage("I rolled a die and it was a " + Math.floor(Math.random() * 6 + 1));
   }
+  
+  function starLast() {
+    var stars = document.querySelectorAll('.message .meta .stars .vote');
+    if (stars && stars.length > 0)
+      stars[stars.length - 1].dispatchEvent(new MouseEvent('click'));
+  }
+  
+  function time() {
+    sendMessage("It is " + Date());
+  }
+  
+  function getXKCD(parameters) {
+    if (parameters.length == 0) {
+      fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
+      .then(response => response.json())
+      .then(json => {
+        sendMessage(json.img);
+      });
+    }
+  
+    else if (parameters.length > 0) {
+      if (parameters[0] === 'random') {
+        fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
+        .then(response => response.json())
+        .then(json => {
+        
+          var num = json.num;
+          var randomNumber = Math.floor(Math.random() * num + 1);
+          var url = "http://xkcd.com/" + randomNumber + "/info.0.json";
+          fetch(`https:/jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            sendMessage(json.img);
+          });
+        });
+      }
+      else {
+        var number = Number(parameters[0]);
+        if (number && number != NaN) {
+          var url = "http://xkcd.com/" + number + "/info.0.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            sendMessage(json.img);
+          });
+        }
+      }
+    }
+  }
+  
+  function playSound() {
+    var players = document.getElementsByTagName("audio");
+    if (players && players.length > 0) {
+      players[0].pause();
+      players[0].currentTime = 0;
+      players[0].play();
+    }
+  }
+  
+  //The following code is written just for testing purposes
+  //and should NEVER be used in chat.stackexchange.com!
+  //Yeah, it works...
+  function nuke(parameters) {
+    var users = document.querySelectorAll("#present-users .present-user .avatar img");
+    var message = "";
+    for (var i = 0; i < users.length; i++)
+      message += "@" + users[i].getAttribute("title") + " ";
+    sendMessage(message + parameters.join(" "));
+  }
+  
+  function reddit(parameters){
+    if (parameters.length < 1) {
+      //Display random subreddit link
+      sendMessage("Click [here](https://www.reddit.com/r/random) to go to random subreddit.");
+    }
+    else if (parameters.length < 2) {
+      //Display link to subreddit
+      var subredditName = parameters[0];
+      if (subredditName.length > 0)
+        sendLink("/r/" + subredditName, "https://reddit.com/r/" + subredditName);
+    }
+    else {
+      //Display new or top post from subreddit
+      var subredditName = parameters[0];
+      var type = parameters[1]; //Can only be "new", "hot" or "top" at the moment
+      if (subredditName.length > 0 && type.length > 0) {
+        if (type === "new") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/new.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Newest post in subreddit **/" + subreddit + "**: [" + title + "](" + url + ")");
+            }
+          });
+        }
+        else if (type === "hot") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/hot.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Hottest post in subreddit **/" + subreddit + "** at the moment: [" + title + "](" + url + ")");
+            }
+          });
+        }
+        else if (type === "top") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/top.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Top post in subreddit **/" + subreddit + "** in the last 24 hours: [" + title + "](" + url + ")");
+            }
+          });
+        }
+      }
+    }
+  }
 	
-
 	var messages = new Array();
 	
 	function youtubeEmbedAll(){
 		var youtube_ele = document.getElementsByClassName('ob-youtube');
-		if (typeof youtube_ele !== 'undefined'){
+		if (typeof youtube_ele !== undefined ){
       for (var i = 0; i < youtube_ele.length; ++i) {
 				messages.push(new message(youtube_ele[i].parentElement.parentElement));
 			}
@@ -433,17 +601,13 @@
 		}
 	}
 	
-	
-	
-	
-	
 	/* 
 	 *	This object store a message content and allow some manipulation on the DOM
 	 *
 	 *  DOMobject = The object with class set to "message". usualy a child of "messages"
 	 */
 	function message(DOMobject){
-			
+			debugger;
 		/* --- Parsing --- */
 		
 		/*
@@ -458,49 +622,50 @@
 		 */
 		this.hasYoutube = function (){
 			try { 
-				return typeof self.content.getElementsByClassName('ob-youtube') !== 'undefined';
-				} catch (exeption){}
+				return typeof self.content.getElementsByClassName('ob-youtube') !== undefined ;
+			} catch (exeption){}
 		}
 		
 		/*
 		 * Parse message content to get all youtbe properties
 		 */
 		this.getYoutube = function (){  
+			var data = {};
 			try { 
-				this.data.object = self.content.getElementsByClassName('ob-youtube')[0]; // get youtube container
+				data.object = self.content.getElementsByClassName('ob-youtube')[0]; // get youtube container
 			} catch (exeption){}
 			
 			try { 
-				this.data.link = this.data.object.getElementsByTagName('a')[0]; // get link object
+				data.link = data.object.getElementsByTagName('a')[0]; // get link object
 			} catch (exeption){}
 			
 			try { 
-				this.data.img = this.data.link.getElementsByTagName('img')[0]; // get img object
+				data.img = data.link.getElementsByTagName('img')[0]; // get img object
 			} catch (exeption){}
 			
 			try { 
-				this.data.iframe = this.data.object.getElementsByTagName('iframe')[0]; // get iframe object
+				data.iframe = data.object.getElementsByTagName('iframe')[0]; // get iframe object
 			} catch (exeption){}
 			
 			try { 
-				this.data.url = '';
-				if (this.data.iframe !== 'undefined' ){ // if there is an iframe, get it's source value
-					this.data.url = this.data.iframe.getAttribute('src'); 
-				} else if (this.data.link !== 'undefined' ){ // if there is an link, get it's hypertext value
-					this.data.url = this.data.link.getAttribute('href'); 
+				data.url = '';
+				if (data.iframe !== undefined  ){ // if there is an iframe, get it's source value
+					data.url = data.iframe.getAttribute('src'); 
+				} else if (data.link !== undefined  ){ // if there is an link, get it's hypertext value
+					data.url = data.link.getAttribute('href'); 
 				}
 			} catch (exeption){}
 			
 			
 			// Parse url to get the Video ID
 			try { 
-				this.data.videoId = '';
+				data.videoId = '';
 				
-				if (this.data.url.indexOf('youtu.be') !== -1 || this.data.url.indexOf('youtu.be') !== -1){ //if shorten or embed the ID is the filename
-					var url_parts = this.data.url.split('/');
-					this.data.videoId = url_parts[url_parts.length -1];
+				if (data.url.indexOf('youtu.be') !== -1 || data.url.indexOf('youtu.be') !== -1){ //if shorten or embed the ID is the filename
+					var url_parts = data.url.split('/');
+					data.videoId = url_parts[url_parts.length -1];
 				} else { //in other case the Id is the value of argument "v"
-					var queryString = this.data.url.split('?')[1];
+					var queryString = data.url.split('?')[1];
 					var vars = queryString.split('&');
 					var params = [];
 					
@@ -509,12 +674,12 @@
 						params[pair[0]] = pair[1];
 					}
 					
-					this.data.videoId = params['v'];
+					data.videoId = params['v'];
 				}
 			} catch (exeption){}
 			
 			// Return parsed data
-			return this.data;
+			return data;
 		}
 			
 		/* --- Remodeling --- */
@@ -523,13 +688,13 @@
 		 * Rearange data to create a embedded video
 		 */
 		this.getEmbed = function() { 
-			if (self.youtube.videoId = null) return null;
-			if (self.youtube.img = null) return null;
+			if (self.youtube.videoId == null) return null;
+			if (self.youtube.img == null) return null;
 			
 			var src = 'https://www.youtube.com/embed/' + self.youtube.videoId;
 			
 			var object = document.createElement('iframe');
-			object.setAttribute('src', embed_src);
+			object.setAttribute('src', src);
 			object.width = self.youtube.img.width;
 			object.height = self.youtube.img.height;
 			
@@ -552,7 +717,8 @@
 		 */
 		this.setEmbed = function() {
 			if(self.embedded == null) return null;
-			self.content = self.embedded;
+			self.youtube.object.innerHTML = '';
+			self.youtube.object.appendChild(self.embedded);
 		}
 		
 		/*
@@ -560,7 +726,8 @@
 		 */
 		this.setLink = function() {
 			if(self.linked == null) return null;
-			self.content = self.linked;
+			self.youtube.object.innerHTML = '';
+			self.youtube.object.appendChild(self.linked);
 		}
 		
 		
@@ -575,5 +742,5 @@
 		this.linked = this.getLink();
 		
 	}
-	
+
 })();
