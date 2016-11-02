@@ -140,7 +140,8 @@
   var targetNode = document.querySelector("#main #chat");
   Array.from(targetNode.querySelectorAll('.user-container .message')).forEach(parseForYouTube);
   const observerConfig = {
-    childList: true
+    childList: true,
+    subtree: true
   };
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
