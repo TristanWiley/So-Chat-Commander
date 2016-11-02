@@ -35,7 +35,12 @@
     ignore: new Command('ignore', ignoreUser),
     coin: new Command('coin', flipACoin),
     dice: new Command('dice', rollADice),
-    unignore: new Command('unignore', unignoreUser)
+    unignore: new Command('unignore', unignoreUser),
+    star: new Command('star', starLast),
+    time: new Command('time', time),
+    sound: new Command('sound', playSound),
+    xkcd: new Command('xkcd', getXKCD),
+    reddit: new Command('reddit', reddit)
   };
   
   chrome.storage.sync.get({
@@ -133,18 +138,20 @@
   }
 
   var targetNode = document.querySelector("#main #chat");
+  Array.from(targetNode.querySelectorAll('.user-container .message')).forEach(parseForYouTube);
   const observerConfig = {
-    childList: true
+    childList: true,
+    subtree: true
   };
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       mutation.addedNodes.forEach(function(node) {
-        removeIgnoredUsers(node)
+        removeIgnoredUsers(node);
+	parseForYouTube(node);
       });
     });
   });
   observer.observe(targetNode, observerConfig);
-
   window.addEventListener('keydown', e => {
     if (!pluginEnabled)
       return;
@@ -441,5 +448,157 @@
   function rollADice() {
     sendMessage("I rolled a die and it was a " + Math.floor(Math.random() * 6 + 1));
   }
-
+  
+  function starLast() {
+    var stars = document.querySelectorAll('.message .meta .stars .vote');
+    if (stars && stars.length > 0)
+      stars[stars.length - 1].dispatchEvent(new MouseEvent('click'));
+  }
+  
+  function time() {
+    sendMessage("It is " + Date());
+  }
+  
+  function getXKCD(parameters) {
+    if (parameters.length == 0) {
+      fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
+      .then(response => response.json())
+      .then(json => {
+        sendMessage(json.img);
+      });
+    }
+  
+    else if (parameters.length > 0) {
+      if (parameters[0] === 'random') {
+        fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
+        .then(response => response.json())
+        .then(json => {
+        
+          var num = json.num;
+          var randomNumber = Math.floor(Math.random() * num + 1);
+          var url = "http://xkcd.com/" + randomNumber + "/info.0.json";
+          fetch(`https:/jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            sendMessage(json.img);
+          });
+        });
+      }
+      else {
+        var number = Number(parameters[0]);
+        if (number && number != NaN) {
+          var url = "http://xkcd.com/" + number + "/info.0.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            sendMessage(json.img);
+          });
+        }
+      }
+    }
+  }
+  
+  function playSound() {
+    var players = document.getElementsByTagName("audio");
+    if (players && players.length > 0) {
+      players[0].pause();
+      players[0].currentTime = 0;
+      players[0].play();
+    }
+  }
+  
+  //The following code is written just for testing purposes
+  //and should NEVER be used in chat.stackexchange.com!
+  //Yeah, it works...
+  function nuke(parameters) {
+    var users = document.querySelectorAll("#present-users .present-user .avatar img");
+    var message = "";
+    for (var i = 0; i < users.length; i++)
+      message += "@" + users[i].getAttribute("title") + " ";
+    sendMessage(message + parameters.join(" "));
+  }
+  
+  function reddit(parameters){
+    if (parameters.length < 1) {
+      //Display random subreddit link
+      sendMessage("Click [here](https://www.reddit.com/r/random) to go to random subreddit.");
+    }
+    else if (parameters.length < 2) {
+      //Display link to subreddit
+      var subredditName = parameters[0];
+      if (subredditName.length > 0)
+        sendLink("/r/" + subredditName, "https://reddit.com/r/" + subredditName);
+    }
+    else {
+      //Display new or top post from subreddit
+      var subredditName = parameters[0];
+      var type = parameters[1]; //Can only be "new", "hot" or "top" at the moment
+      if (subredditName.length > 0 && type.length > 0) {
+        if (type === "new") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/new.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Newest post in subreddit **/" + subreddit + "**: [" + title + "](" + url + ")");
+            }
+          });
+        }
+        else if (type === "hot") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/hot.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Hottest post in subreddit **/" + subreddit + "** at the moment: [" + title + "](" + url + ")");
+            }
+          });
+        }
+        else if (type === "top") {
+          var url = "https://www.reddit.com/r/" + subredditName + "/top.json";
+          fetch(`https://jsonp.afeld.me/?url=` + url)
+          .then(response => response.json())
+          .then(json => {
+            var posts = json.data.children;
+            if (posts && posts.length > 0) {
+              var post = posts[0].data;
+              var title = post.title.trim().replace("[", "\\[").replace("]", "\\]");
+              var url = post.url;
+              var subreddit = post.subreddit;
+              sendMessage("Top post in subreddit **/" + subreddit + "** in the last 24 hours: [" + title + "](" + url + ")");
+            }
+          });
+        }
+      }
+    }
+  }
+  function parseForYouTube(node) {
+    if( !node.classList || !node.classList.contains('message') || node.classList.contains('pending') ) return; 
+    const yt = node.querySelector('.onebox.ob-youtube');
+    if( !yt ) return;
+    const link = yt.querySelector('a'); 
+    let videoHref;
+    if( /(youtu\.?be)\/.+$/.test(link.href) ) { 
+        videoHref = link.href.split('/').pop();
+    } else {
+        videoHref = link.href.match(/v\=(.*)&?/).pop().replace(/&/, '/?'); 
+    } 
+    const vid = document.createElement('iframe');
+    vid.setAttribute('height', 240);
+    vid.setAttribute('width', 320);
+    vid.setAttribute('frameborder', 0);
+    vid.setAttribute('allowfullscreen', 'true');
+    vid.src = '//youtube.com/embed/' + videoHref;
+    yt.parentNode.replaceChild(vid, yt);
+  }
 })();
