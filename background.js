@@ -96,7 +96,7 @@
 
         for (var i = 0; i < possibleCommands.length; i++) {
           var tempCommand = document.createElement('span');
-          tempCommand.style = 'margin: 4px; cursor: pointer;';
+          tempCommand.style = 'margin: 4px; cursor: pointer; ';
           tempCommand.innerHTML = possibleCommands[i];
           tempCommand.onclick = commandClicked;
           popup.appendChild(tempCommand);
@@ -157,6 +157,9 @@
       return;
 
     var key = e.which || e.keyCode;
+    if(input.value[0] === '/' && key === 8){
+      removePopup();
+    };
 
     if (key === 9 && document.getElementById('commands-list')) { // "tab"
       var allComands = document.getElementById('commands-list').querySelectorAll('span');
