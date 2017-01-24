@@ -40,7 +40,8 @@
     time: new Command('time', time),
     sound: new Command('sound', playSound),
     xkcd: new Command('xkcd', getXKCD),
-    reddit: new Command('reddit', reddit)
+    reddit: new Command('reddit', reddit),
+    kiddo: new Command('kiddo', kiddo)
   };
   
   chrome.storage.sync.get({
@@ -586,6 +587,11 @@
       }
     }
   }
+
+  function kiddo() {
+    sendMessage("(☞ﾟヮﾟ)☞ That's where you're wrong kiddo")
+  }
+
   function parseForYouTube(node) {
     if( !node.classList || !node.classList.contains('message') || node.classList.contains('pending') ) return; 
     const yt = node.querySelector('.onebox.ob-youtube');

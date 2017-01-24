@@ -40,6 +40,7 @@ var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikip
     new Command('sound', 'will play sound on local computer.'),
     new Command('xkcd', 'will display last / random XKCD comic.'),
     new Command('reddit', 'will send link to newest / hottest / top post in subreddit.')
+    new Command('kiddo', 'will send (☞ﾟヮﾟ)☞ That\'s where you\'re wrong kiddo')
 	];
 
 function saveCommands(){
