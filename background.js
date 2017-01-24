@@ -41,7 +41,9 @@
     sound: new Command('sound', playSound),
     xkcd: new Command('xkcd', getXKCD),
     reddit: new Command('reddit', reddit),
-    kiddo: new Command('kiddo', kiddo)
+    kiddo: new Command('kiddo', kiddo),
+    tableflip: new Command('tableflip', tableflip),
+    disapprove: new Command('disapprove', disapprove)
   };
   
   chrome.storage.sync.get({
@@ -590,6 +592,14 @@
 
   function kiddo() {
     sendMessage("(☞ﾟヮﾟ)☞ That's where you're wrong kiddo")
+  }
+
+  function tableflip() {
+    sendMessage("(╯°□°)╯︵ ┻━┻")
+  }
+
+  function disapprove() {
+    sendMessage("ಠ_ಠ")
   }
 
   function parseForYouTube(node) {
