@@ -43,6 +43,7 @@
     reddit: new Command('reddit', reddit),
     kiddo: new Command('kiddo', kiddo),
     tableflip: new Command('tableflip', tableflip),
+    settable: new Command('settable', settable),
     disapprove: new Command('disapprove', disapprove),
     ayfkm: new Command('ayfkm', ayfkm)
   };
@@ -597,6 +598,10 @@
 
   function tableflip() {
     sendMessage("(╯°□°)╯︵ ┻━┻")
+  }
+
+  function settable() {
+    sendMessage("┬─┬ノ( º _ ºノ)")
   }
 
   function disapprove() {
