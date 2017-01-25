@@ -42,7 +42,8 @@ var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikip
     new Command('reddit', 'will send link to newest / hottest / top post in subreddit.'),
     new Command('kiddo', 'will send (☞ﾟヮﾟ)☞ That\'s where you\'re wrong kiddo'),
     new Command('tableflip', 'will send (╯°□°)╯︵ ┻━┻'),
-    new Command('disapprove', 'will send ಠ_ಠ')
+    new Command('disapprove', 'will send ಠ_ಠ'),
+    new Command('ayfkm', 'will send a comic for "are you fucking kidding me"')
 	];
 
 function saveCommands(){

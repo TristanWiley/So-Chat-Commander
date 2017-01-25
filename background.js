@@ -43,7 +43,8 @@
     reddit: new Command('reddit', reddit),
     kiddo: new Command('kiddo', kiddo),
     tableflip: new Command('tableflip', tableflip),
-    disapprove: new Command('disapprove', disapprove)
+    disapprove: new Command('disapprove', disapprove),
+    ayfkm: new Command('ayfkm', ayfkm)
   };
   
   chrome.storage.sync.get({
@@ -600,6 +601,10 @@
 
   function disapprove() {
     sendMessage("ಠ_ಠ")
+  }
+
+  function ayfkm() {
+    sendMessage("http://i.imgur.com/KUlWVoe.png")
   }
 
   function parseForYouTube(node) {
