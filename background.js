@@ -45,7 +45,8 @@
     tableflip: new Command('tableflip', tableflip),
     settable: new Command('settable', settable),
     disapprove: new Command('disapprove', disapprove),
-    ayfkm: new Command('ayfkm', ayfkm)
+    ayfkm: new Command('ayfkm', ayfkm),
+    thinking: new Command('thinking', thinking)
   };
   
   chrome.storage.sync.get({
@@ -610,6 +611,10 @@
 
   function ayfkm() {
     sendMessage("http://i.imgur.com/KUlWVoe.png")
+  }
+
+  function thinking() {
+	  sendMessage("http://i.imgur.com/K5MtVMt.png")
   }
 
   function parseForYouTube(node) {
