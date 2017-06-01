@@ -45,7 +45,8 @@ var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikip
     new Command('settable', 'will send ┬─┬ノ( º _ ºノ)'),
     new Command('disapprove', 'will send ಠ_ಠ'),
     new Command('ayfkm', 'will send a comic for "are you fucking kidding me"'),
-    new Command('thinking', 'will send the thinking face')
+    new Command('thinking', 'will send the thinking face'),
+    new Command('lenny', 'will send a (͡° ͜ʖ ͡°)', true)
 	];
 
 function saveCommands(){

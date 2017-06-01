@@ -46,7 +46,8 @@
     settable: new Command('settable', settable),
     disapprove: new Command('disapprove', disapprove),
     ayfkm: new Command('ayfkm', ayfkm),
-    thinking: new Command('thinking', thinking)
+    thinking: new Command('thinking', thinking),
+    lenny: new Command('lenny', lenny)
   };
   
   chrome.storage.sync.get({
@@ -615,6 +616,10 @@
 
   function thinking() {
 	  sendMessage("http://i.imgur.com/K5MtVMt.png")
+  }
+
+  function lenny() {
+    sendMessage('(͡° ͜ʖ ͡°)')
   }
 
   function parseForYouTube(node) {
