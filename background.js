@@ -18,10 +18,10 @@
       commands[name] :
       undefined;
   }
-  
+
   var displayPop = true;
   var pluginEnabled = true;
-  
+
   var commands = {
     collapse: new Command('collapse', collapseAll),
     uncollapse: new Command('uncollapse', unCollapseAll),
@@ -49,7 +49,7 @@
     thinking: new Command('thinking', thinking),
     lenny: new Command('lenny', lenny)
   };
-  
+
   chrome.storage.sync.get({
 	commands: [],
 	pluginEnabled: true,
@@ -271,7 +271,7 @@
   }
 
   function shruggie() {
-    sendMessage('¯\\\\_(ツ)_/¯');
+    sendMessage('¯\\_(ツ)_/¯');
   }
 
   function getNorris() {
@@ -459,17 +459,17 @@
   function rollADice() {
     sendMessage("I rolled a die and it was a " + Math.floor(Math.random() * 6 + 1));
   }
-  
+
   function starLast() {
     var stars = document.querySelectorAll('.message .meta .stars .vote');
     if (stars && stars.length > 0)
       stars[stars.length - 1].dispatchEvent(new MouseEvent('click'));
   }
-  
+
   function time() {
     sendMessage("It is " + Date());
   }
-  
+
   function getXKCD(parameters) {
     if (parameters.length == 0) {
       fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
@@ -478,13 +478,13 @@
         sendMessage(json.img);
       });
     }
-  
+
     else if (parameters.length > 0) {
       if (parameters[0] === 'random') {
         fetch(`https://jsonp.afeld.me/?url=http://xkcd.com/info.0.json`)
         .then(response => response.json())
         .then(json => {
-        
+
           var num = json.num;
           var randomNumber = Math.floor(Math.random() * num + 1);
           var url = "http://xkcd.com/" + randomNumber + "/info.0.json";
@@ -508,7 +508,7 @@
       }
     }
   }
-  
+
   function playSound() {
     var players = document.getElementsByTagName("audio");
     if (players && players.length > 0) {
@@ -517,7 +517,7 @@
       players[0].play();
     }
   }
-  
+
   //The following code is written just for testing purposes
   //and should NEVER be used in chat.stackexchange.com!
   //Yeah, it works...
@@ -528,7 +528,7 @@
       message += "@" + users[i].getAttribute("title") + " ";
     sendMessage(message + parameters.join(" "));
   }
-  
+
   function reddit(parameters){
     if (parameters.length < 1) {
       //Display random subreddit link
