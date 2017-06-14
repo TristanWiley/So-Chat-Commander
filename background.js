@@ -299,7 +299,7 @@
       .then(response => response.json())
       .then(json => {
         const url = json.data[0].images.fixed_height.url;
-        sendMessage(url);
+        sendMessage("!" + url);
       });
   }
 
