@@ -344,8 +344,12 @@
     }
 
     // The time spent adding random comments could actually have been used to put in helpful comments.
-    function getCat() {
-        fetch(`https://thecatapi.com/api/images/get?format=html&type=png`)
+    function getCat(parameters) {
+        var type = parameters[0];
+        if (!['gif', 'png', 'jpg'].includes(type)) {
+            type = "jpg";
+        }
+        fetch(`https://thecatapi.com/api/images/get?format=html&type=` + type)
             .then(response => response.text())
             .then(text => {
                 var url = text.substring(text.indexOf('<img src="') + 10, text.indexOf('"></a>'));
