@@ -1,4 +1,18 @@
 (function() {
+    /**
+     * NodeList #forEach polyfill
+     * https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach
+     */
+    if (window.NodeList && !NodeList.prototype.forEach) {
+        NodeList.prototype.forEach = function (callback, argument) {
+            argument = argument || window;
+            for (var i = 0; i < this.length; i++) {
+                callback.call(argument, this[i], i, this);
+            }
+        };
+    }
+
+    /** Main Extension Code */
     var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
     var Command = function(name, callback) {
         this.name = name;
