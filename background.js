@@ -205,7 +205,9 @@
                 e.stopPropagation();
                 var additionalParameters = data.length > 1 ? data.slice(1) : [];
                 var tempCommand = findCommand(commandName);
-
+                if(!tempCommand){
+                    sendMessage(enteredText);
+                }
                 if (tempCommand) {
                     tempCommand.execute(additionalParameters);
                 }
