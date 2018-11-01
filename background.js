@@ -104,7 +104,7 @@
 
                 for (var i = 0; i < possibleCommands.length; i++) {
                     var tempCommand = document.createElement('span')
-                    tempCommand.style = 'margin: 4px cursor: pointer display: block float: left'
+                    tempCommand.style = 'margin: 4px; cursor: pointer; display: block; float: left;'
                     tempCommand.innerHTML = possibleCommands[i]
                     tempCommand.onclick = commandClicked
                     popup.appendChild(tempCommand)
@@ -114,7 +114,7 @@
 
                 element.id = "commands-popup"
                 element.className = "popup"
-                element.style = "position: absolute left: 0 top: 0 width: 600px transform:translateY(-100%)"
+                element.style = "position: absolute; left: 0; top: 0; width: 600px; transform:translateY(-100%);"
 
                 var inputArea = document.getElementById('input-area')
 
@@ -128,11 +128,11 @@
                 var commandsList = document.createElement('ul')
                 commandsList.className = 'commands-list'
                 commandsList.id = 'commands-list'
-                commandsList.style = 'list-style-type: none'
+                commandsList.style = 'list-style-type: none; padding: 4px;'
 
                 for (var i = 0; i < possibleCommands.length; i++) {
                     var tempCommand = document.createElement('li')
-                    tempCommand.style = 'margin: 4px cursor: pointer display: block float: left'
+                    tempCommand.style = 'margin: 4px; cursor: pointer; display: block; float: left;'
                     tempCommand.innerHTML = possibleCommands[i]
                     tempCommand.onclick = commandClicked
                     commandsList.appendChild(tempCommand)
