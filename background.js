@@ -304,7 +304,7 @@
   function giphyStuff(parameters) {
     var searchText = encodeURI(parameters.join(' '))
 
-    fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
+    fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=hjd2o9jr9kr7i3Fmi5511XRQNSnLTiuX`)
       .then(response => response.json())
       .then(json => {
         const url = json.data[0].images.fixed_height.url
@@ -322,7 +322,7 @@
     }
     var searchText = encodeURI(parameters.join(' '))
 
-    fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=dc6zaTOxFJmzC`)
+    fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=hjd2o9jr9kr7i3Fmi5511XRQNSnLTiuX`)
       .then(response => response.json())
       .then(json => {
         const url = json.data[0].images.fixed_height.url

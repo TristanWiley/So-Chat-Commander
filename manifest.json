@@ -3,7 +3,7 @@
 
   "name": "SO Chat Commander",
   "description": "This extension acts as an aide for StackExchange Chat users and provides different local commands to help you!",
-  "version": "1.78",
+  "version": "1.79",
   "options_page": "options.html",
   "content_scripts": [
     {
