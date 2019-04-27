@@ -1,7 +1,8 @@
 (function () {
   loadDragDrop()
   var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
-  [...document.getElementsByClassName('username')].forEach(el => removeIgnoredUsers(el))
+
+  ignoreAllUsers()
   
   var Command = function (name, callback) {
     this.name = name
@@ -93,6 +94,10 @@
     input.value = "/" + this.innerHTML
     input.focus()
     removePopup()
+  }
+
+  function ignoreAllUsers() {
+    [...document.getElementsByClassName('username')].forEach(el => removeIgnoredUsers(el))
   }
 
   function displayPopup(possibleCommands) {
@@ -307,7 +312,8 @@
     fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=hjd2o9jr9kr7i3Fmi5511XRQNSnLTiuX`)
       .then(response => response.json())
       .then(json => {
-        const url = json.data[0].images.fixed_height.url
+        const item = json.data[Math.floor(Math.random()*json.data.length)];
+        const url = item.images.fixed_height.url
         sendMessage("!" + url)
       })
   }
@@ -325,7 +331,8 @@
     fetch(`https://api.giphy.com/v1/gifs/search?q=${searchText}&api_key=hjd2o9jr9kr7i3Fmi5511XRQNSnLTiuX`)
       .then(response => response.json())
       .then(json => {
-        const url = json.data[0].images.fixed_height.url
+        const item = json.data[Math.floor(Math.random()*json.data.length)];
+        const url = item.images.fixed_height.url
         sendLink(linkText || parameters.join(' '), url)
       })
   }
@@ -425,6 +432,8 @@
     } else {
       displayMessage(`${name} is already muted`)
     }
+
+    ignoreAllUsers()
   }
 
   function flipACoin() {
