@@ -378,6 +378,7 @@
   }
 
   function removeIgnoredUsers(node) {
+    if (!node.querySelector) return
     const el = node.querySelector("a .username")
     let name = ""
 
