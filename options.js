@@ -22,12 +22,14 @@ function commandChanged() {
     }
 }
 
-var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.', true),
+var allCommands = [
+    new Command('collapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.', true),
     new Command('uncollapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and uncollapses it.', true),
     new Command('shruggie', 'will send a ¯\\_(ツ)_/¯.', true),
     new Command('norris', 'will post a random Chuck Norris joke.', true),
     new Command('skeet', 'will also post a random joke.', true),
     new Command('cat', 'will post a random cat picture. Add <gif, png, or jpg> if you want to specify a type. Defaults to jpg.', true),
+    new Command('dog', 'will post a random dog picture.', true),
     new Command('replyLast', 'will reply to the last message <username> sent with the message <message>.', true),
     new Command('giphy', 'will send a GIF to the chat according to anything you send after it.', true),
     new Command('glink', 'will send a link to a GIF according to anything you send after it.', true),
@@ -35,17 +37,17 @@ var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikip
     new Command('coin', 'will flip a coin and output its value.', true),
     new Command('dice', 'will roll a dice and output its value.', true),
     new Command('unignore', 'will unignore user and start displaying his messages again.', true),
-    new Command('star', 'will star last message.'),
-    new Command('time', 'will display current time.'),
-    new Command('sound', 'will play sound on local computer.'),
-    new Command('xkcd', 'will display last / random XKCD comic.'),
-    new Command('reddit', 'will send link to newest / hottest / top post in subreddit.'),
-    new Command('kiddo', 'will send (☞ﾟヮﾟ)☞ That\'s where you\'re wrong kiddo'),
-    new Command('tableflip', 'will send (╯°□°)╯︵ ┻━┻'),
-    new Command('settable', 'will send ┬─┬ノ( º _ ºノ)'),
-    new Command('disapprove', 'will send ಠ_ಠ'),
-    new Command('ayfkm', 'will send a comic for "are you fucking kidding me"'),
-    new Command('thinking', 'will send the thinking face'),
+    new Command('star', 'will star last message.', true),
+    new Command('time', 'will display current time.', true),
+    new Command('sound', 'will play sound on local computer.', true),
+    new Command('xkcd', 'will display last / random XKCD comic.', true),
+    new Command('reddit', 'will send link to newest / hottest / top post in subreddit.', true),
+    new Command('kiddo', 'will send (☞ﾟヮﾟ)☞ That\'s where you\'re wrong kiddo', true),
+    new Command('tableflip', 'will send (╯°□°)╯︵ ┻━┻', true),
+    new Command('settable', 'will send ┬─┬ノ( º _ ºノ)', true),
+    new Command('disapprove', 'will send ಠ_ಠ', true),
+    new Command('ayfkm', 'will send a comic for "are you fucking kidding me"', true),
+    new Command('thinking', 'will send the thinking face', true),
     new Command('lenny', 'will send a (͡° ͜ʖ ͡°)', true)
 ];
 
