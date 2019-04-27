@@ -1,6 +1,8 @@
 (function () {
   loadDragDrop()
-  var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : []
+  var ignoreList = localStorage.getItem("ignoreList") ? JSON.parse(localStorage.getItem("ignoreList")) : [];
+  [...document.getElementsByClassName('username')].forEach(el => removeIgnoredUsers(el))
+  
   var Command = function (name, callback) {
     this.name = name
     this.callback = callback
@@ -379,15 +381,14 @@
   }
 
   function removeIgnoredUsers(node) {
-    if (!node.querySelector) return
-    const el = node.querySelector("a .username")
+    if (!node.innerText) return
     let name = ""
 
-    if (el) {
-      name = normalizeName(el.innerHTML)
+    if (node) {
+      name = normalizeName(node.innerText)
     }
     if (ignoreList.indexOf(name) != -1) {
-      targetNode.removeChild(node)
+      node.closest('.user-container').remove()
     }
   }
 
@@ -470,7 +471,6 @@
   }
 
   function updateStore() {
-    console.log(ignoreList)
     localStorage.setItem("ignoreList", JSON.stringify(ignoreList))
   }
 
