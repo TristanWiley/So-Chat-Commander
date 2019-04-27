@@ -22,12 +22,14 @@ function commandChanged() {
     }
 }
 
-var allCommands = [new Command('collapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.', true),
+var allCommands = [
+    new Command('collapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and collapses it.', true),
     new Command('uncollapse', 'takes any onebox chat message (Wikipedia, SO Question/Answer, Youtube, Image, etc.) and uncollapses it.', true),
     new Command('shruggie', 'will send a ¯\\_(ツ)_/¯.', true),
     new Command('norris', 'will post a random Chuck Norris joke.', true),
     new Command('skeet', 'will also post a random joke.', true),
     new Command('cat', 'will post a random cat picture. Add <gif, png, or jpg> if you want to specify a type. Defaults to jpg.', true),
+    new Command('dog', 'will post a random dog picture.', true),
     new Command('replyLast', 'will reply to the last message <username> sent with the message <message>.', true),
     new Command('giphy', 'will send a GIF to the chat according to anything you send after it.', true),
     new Command('glink', 'will send a link to a GIF according to anything you send after it.', true),

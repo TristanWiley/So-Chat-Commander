@@ -4,7 +4,7 @@
   var Command = function (name, callback) {
     this.name = name
     this.callback = callback
-    this.isEnabled = true
+    this.isEnabled = false
     this.execute = function (parameters) {
       if (this.isEnabled)
         this.callback(parameters)
@@ -241,8 +241,9 @@
       } else {
         var possibleCommands = []
         Object.keys(commands).forEach(function (command) {
-          if (command.indexOf(commandName) >= 0)
+          if (command.indexOf(commandName) >= 0 && commands[command].isEnabled) {
             possibleCommands.push(command)
+          }
         })
 
         displayPopup(possibleCommands.sort())
