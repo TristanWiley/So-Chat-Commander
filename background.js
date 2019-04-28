@@ -365,10 +365,10 @@
     if (!['gif', 'png', 'jpg'].includes(type)) {
       type = "jpg"
     }
-    fetch(`https://thecatapi.com/api/images/get?format=html&type=` + type)
-      .then(response => response.text())
-      .then(text => {
-        var url = text.substring(text.indexOf('<img src="') + 10, text.indexOf('"></a>'))
+    fetch(`https://api.thecatapi.com/v1/images/search?mime_types=` + type)
+      .then(response => response.json())
+      .then(json => {
+        var url = json[0]['url']
         sendMessage(url)
       })
   }
